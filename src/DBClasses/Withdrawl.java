@@ -9,6 +9,7 @@ public abstract class Withdrawl extends Transaction {
     }
 
     public int subMoney(int amt) {
-        return (totalAmt - amt);
+        //return (totalAmt - amt);
+        return 0;
     }
 }
