@@ -4,18 +4,21 @@ import java.sql.Date;
 
 public class Checking {
     int userID;
-    int totalAmt;
+    int amt;
+    int total;
     Date date;
     String transactionType;
     int transactionID;
     String acct = "checking";
 
-    public Checking(int userID, int totalAmt, Date date, String transactionType, int transactionID) {
+    public Checking(int userID, int amt, int total, Date date, String transactionType, int transactionID, String acct) {
         this.userID = userID;
-        this.totalAmt = totalAmt;
+        this.amt = amt;
+        this.total = total;
         this.date = date;
         this.transactionType = transactionType;
         this.transactionID = transactionID;
+        this.acct = acct;
     }
 
     public int getUserID() {
@@ -26,12 +29,20 @@ public class Checking {
         this.userID = userID;
     }
 
-    public int getTotalAmt() {
-        return totalAmt;
+    public int getAmt() {
+        return amt;
     }
 
-    public void setTotalAmt(int totalAmt) {
-        this.totalAmt = totalAmt;
+    public void setAmt(int amt) {
+        this.amt = amt;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
     }
 
     public Date getDate() {
@@ -58,8 +69,11 @@ public class Checking {
         this.transactionID = transactionID;
     }
 
-    public String getAccount() {
+    public String getAcct() {
         return acct;
     }
 
+    public void setAcct(String acct) {
+        this.acct = acct;
+    }
 }
