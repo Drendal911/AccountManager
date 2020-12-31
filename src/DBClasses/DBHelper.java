@@ -31,6 +31,7 @@ public class DBHelper {
             System.out.println("Something went wrong. Driver not loaded.");
         }
     }
+
     public void dbExecStmt(String s) throws SQLException {
         try {
             dbConnect = DriverManager.getConnection(DB_URL, username, password);
@@ -48,6 +49,7 @@ public class DBHelper {
         }
     }
 
+    //DB call used with SELECT statements
     public ResultSet dbGetResSet(String s) throws SQLException {
         dbConnect = null;
         try {

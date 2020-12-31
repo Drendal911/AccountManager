@@ -2,14 +2,15 @@ package DBClasses;
 
 import java.sql.Date;
 
-public class Total {
+public class Savings {
     int userID;
     int totalAmt;
     Date date;
     String transactionType;
     int transactionID;
+    String acct = "savings";
 
-    public Total(int userID, int totalAmt, Date date, String transactionType, int transactionID) {
+    public Savings(int userID, int totalAmt, Date date, String transactionType, int transactionID) {
         this.userID = userID;
         this.totalAmt = totalAmt;
         this.date = date;
@@ -56,4 +57,9 @@ public class Total {
     public void setTransactionID(int transactionID) {
         this.transactionID = transactionID;
     }
+
+    public String getAccount() {
+        return acct;
+    }
+
 }

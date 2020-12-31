@@ -2,15 +2,15 @@ package DBClasses;
 
 import java.sql.Date;
 
-public class CheckWithdrawal extends Withdrawal{
+public class CheckDeposit extends Deposit {
     int checkNum;
-    String payee;
+    String payer;
     String acct;
 
-    public CheckWithdrawal(int userID, int amt, int oldTotal, Date date, int checkNum, String payee, String acct) {
+    public CheckDeposit(int userID, int amt, int oldTotal, Date date, int checkNum, String payer, String acct) {
         super(userID, amt, oldTotal, date);
         this.checkNum = checkNum;
-        this.payee = payee;
+        this.payer = payer;
         this.acct = acct;
     }
 
@@ -22,19 +22,19 @@ public class CheckWithdrawal extends Withdrawal{
         this.checkNum = checkNum;
     }
 
-    public String getPayee() {
-        return payee;
+    public String getPayer() {
+        return payer;
     }
 
-    public void setPayee(String payee) {
-        this.payee = payee;
+    public void setPayer(String payer) {
+        this.payer = payer;
     }
 
-    public String getAccount() {
+    public String getAcct() {
         return acct;
     }
 
-    public void setAccount(String acct) {
+    public void setAcct(String acct) {
         this.acct = acct;
     }
 }
