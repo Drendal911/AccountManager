@@ -1,9 +1,9 @@
 package DBClasses;
 
 public class User {
-    int userID;
-    String userName;
-    String password;
+    private int userID;
+    private String userName;
+    private String password;
 
     public User(int userID, String userName, String password) {
         this.userID = userID;

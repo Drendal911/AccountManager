@@ -3,9 +3,9 @@ package DBClasses;
 import java.sql.Date;
 
 public class CheckWithdrawal extends Withdrawal{
-    int checkNum;
-    String payee;
-    String acct;
+    private int checkNum;
+    private String payee;
+    private String acct;
 
     public CheckWithdrawal(int userID, int amt, int oldTotal, Date date, int checkNum, String payee, String acct) {
         super(userID, amt, oldTotal, date);

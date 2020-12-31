@@ -3,9 +3,9 @@ package DBClasses;
 import java.sql.Date;
 
 public class NonCheckWithdrawal extends Withdrawal{
-    String withdrawalType;
-    String withdrawalReason;
-    String acct;
+    private String withdrawalType;
+    private String withdrawalReason;
+    private String acct;
 
     public NonCheckWithdrawal(int userID, int amt, int oldTotal, Date date, String withdrawalType, String withdrawalReason, String acct) {
         super(userID, amt, oldTotal, date);

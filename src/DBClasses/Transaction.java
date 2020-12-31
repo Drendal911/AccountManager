@@ -3,11 +3,11 @@ package DBClasses;
 import java.sql.Date;
 
 public abstract class Transaction {
-    int userID;
-    int amt;
-    int oldTotal;
-    int newTotal;
-    Date date;
+    protected int userID;
+    protected int amt;
+    protected int oldTotal;
+    protected int newTotal;
+    protected Date date;
 
     public Transaction(int userID, int amt, int oldTotal, Date date) {
         this.userID = userID;

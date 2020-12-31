@@ -3,9 +3,9 @@ package DBClasses;
 import java.sql.Date;
 
 public class CheckDeposit extends Deposit {
-    int checkNum;
-    String payer;
-    String acct;
+    private int checkNum;
+    private String payer;
+    private String acct;
 
     public CheckDeposit(int userID, int amt, int oldTotal, Date date, int checkNum, String payer, String acct) {
         super(userID, amt, oldTotal, date);

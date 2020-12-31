@@ -3,13 +3,13 @@ package DBClasses;
 import java.sql.Date;
 
 public class Checking {
-    int userID;
-    int amt;
-    int total;
-    Date date;
-    String transactionType;
-    int transactionID;
-    String acct = "checking";
+    private int userID;
+    private int amt;
+    private int total;
+    private Date date;
+    private String transactionType;
+    private int transactionID;
+    private String acct = "checking";
 
     public Checking(int userID, int amt, int total, Date date, String transactionType, int transactionID, String acct) {
         this.userID = userID;

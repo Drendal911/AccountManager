@@ -3,9 +3,9 @@ package DBClasses;
 import java.sql.Date;
 
 public class NonCheckDeposit extends Deposit {
-    String depositType;
-    String depositMemo;
-    String acct;
+    private String depositType;
+    private String depositMemo;
+    private String acct;
 
     public NonCheckDeposit(int userID, int amt, int oldTotal, Date date, String depositType, String depositMemo, String acct) {
         super(userID, amt, oldTotal, date);
