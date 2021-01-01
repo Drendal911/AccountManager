@@ -94,23 +94,6 @@ public class DBHelper {
                     stmt.executeUpdate(query);
                     break;
             }
-
-/*
-            //Determines the query type
-            if(query.toLowerCase().startsWith("select")) { //The 'q' used to be 'query'
-                rs = stmt.executeQuery(query);
-            }
-            if(query.toLowerCase().startsWith("delete")) {
-                stmt.executeUpdate(query);
-            }
-            if(query.toLowerCase().startsWith("update")) {
-                stmt.executeUpdate(query);
-            }
-            if(query.toLowerCase().startsWith("insert")) {
-                stmt.executeUpdate(query);
-            }
-
- */
         }
         catch (SQLException e) {
             System.out.println("Error: " + e.getMessage());

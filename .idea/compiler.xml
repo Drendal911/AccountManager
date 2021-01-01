@@ -12,7 +12,7 @@
       <entry name="!?*.kt" />
       <entry name="!?*.clj" />
     </wildcardResourcePatterns>
-    <bytecodeTargetLevel target="8">
+    <bytecodeTargetLevel target="15">
       <module name="AccountManager" target="" />
     </bytecodeTargetLevel>
   </component>

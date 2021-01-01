@@ -15,7 +15,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
         primaryStage.setTitle("Account Manager");
         primaryStage.setScene(new Scene(root, 300, 275));
         primaryStage.show();
@@ -37,10 +37,10 @@ public class Main extends Application {
             hashMap.put(resultSet.getString("UserName"), resultSet.getString("Password"));
             resultSet.close();
 
-            System.out.println(hashMap);
+            System.out.println(hashMap.get("123"));
 
         }catch (SQLException | NullPointerException e) {
-            //System.out.println("NullPointerException");
+            System.out.println(e.getMessage());
         }
 
 
