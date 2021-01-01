@@ -11,8 +11,10 @@ public class DBHelper {
     private static final String driver = "com.mysql.jdbc.Driver";
 
     Connection dbConnect;
-    Statement stmt;
-    ResultSet rs;
+    private Statement stmt;
+    private ResultSet rs;
+    private String query;
+
 
     public DBHelper() {
     }
@@ -31,7 +33,7 @@ public class DBHelper {
             System.out.println("Something went wrong. Driver not loaded.");
         }
     }
-
+/*
     public void dbExecStmt(String s) throws SQLException {
         try {
             dbConnect = DriverManager.getConnection(DB_URL, username, password);
@@ -53,12 +55,10 @@ public class DBHelper {
     public ResultSet dbGetResSet(String s) throws SQLException {
         dbConnect = null;
         try {
-            dbConnect = DriverManager.getConnection("jdbc:mysql://192.168.0.189/test?user=acctmgr_guest&password=" +
-                    "acctmgr_password");
+            dbConnect = DriverManager.getConnection(DB_URL, username, password);
             stmt = dbConnect.createStatement();
             stmt.executeQuery(s);
             rs = stmt.getResultSet();
-            dbConnect.close();
 
         }catch (SQLException ex) {
             // handle any errors
@@ -68,6 +68,57 @@ public class DBHelper {
             dbConnect.rollback();
             dbConnect.close();
         }
+        return rs;
+    }
+*/
+
+    //This class will handle different query types
+    public void makeQuery (String q) throws SQLException {
+        try {
+            query = q;
+            dbConnect = DriverManager.getConnection(DB_URL, username, password);
+            stmt = dbConnect.createStatement();
+            String type = query.toLowerCase().substring(0,6);
+
+            switch (type) {
+                case ("select"):
+                    rs = stmt.executeQuery(query);
+                    break;
+                case ("delete"):
+                    stmt.executeUpdate(query);
+                    break;
+                case ("update"):
+                    stmt.executeUpdate(query);
+                    break;
+                case ("insert"):
+                    stmt.executeUpdate(query);
+                    break;
+            }
+
+/*
+            //Determines the query type
+            if(query.toLowerCase().startsWith("select")) { //The 'q' used to be 'query'
+                rs = stmt.executeQuery(query);
+            }
+            if(query.toLowerCase().startsWith("delete")) {
+                stmt.executeUpdate(query);
+            }
+            if(query.toLowerCase().startsWith("update")) {
+                stmt.executeUpdate(query);
+            }
+            if(query.toLowerCase().startsWith("insert")) {
+                stmt.executeUpdate(query);
+            }
+
+ */
+        }
+        catch (SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    //Returns a result
+    public ResultSet getResult() {
         return rs;
     }
 }

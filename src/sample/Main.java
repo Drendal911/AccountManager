@@ -7,7 +7,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 public class Main extends Application {
 
@@ -20,10 +22,27 @@ public class Main extends Application {
     }
 
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
         launch(args);
         DBHelper db = new DBHelper();
+        HashMap<String, String> hashMap = new HashMap<>();
         db.loadDriver();
-        //db.dbExecStmt("create table users (UserID int not null, UserName varchar(30) not null, Password varchar(30) not null, primary key (UserID))");
+
+
+        try {
+            db.makeQuery("select * from users;");
+            ResultSet resultSet = db.getResult();
+            resultSet.first();
+
+            hashMap.put(resultSet.getString("UserName"), resultSet.getString("Password"));
+            resultSet.close();
+
+            System.out.println(hashMap);
+
+        }catch (SQLException | NullPointerException e) {
+            //System.out.println("NullPointerException");
+        }
+
+
     }
 }
