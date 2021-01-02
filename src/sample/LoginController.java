@@ -1,6 +1,7 @@
 package sample;
 
 import DBClasses.DBHelper;
+import Utility.DialogBox;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -10,6 +11,7 @@ import java.sql.SQLException;
 
 public class LoginController {
     DBHelper db = new DBHelper();
+    DialogBox dialogBox = new DialogBox();
     @FXML
     private TextField userNameTextField, passwordTextField;
     private Button loginButton, registerButton;
@@ -28,15 +30,21 @@ public class LoginController {
 
         try {
             db.makeQuery("select * from users where UserName = '" + username + "'");
-            String pw = db.getResult().getString("Password");
+            ResultSet resultSet = db.getResult();
+            resultSet.first();
+            String pw = resultSet.getString("Password");
+
+            resultSet.close();
             if (password.equals(pw)) {
                 System.out.println("Match!");
             }else {
                 System.out.println("No Match!");
             }
         }catch (SQLException e) {
-            throw e;
+            dialogBox.infoAlertDialog("USER NOT FOUND", "Please check the 'Username' field or click " +
+                    "the 'Register' button to create a new account.");
         }
+
 
     }
 }

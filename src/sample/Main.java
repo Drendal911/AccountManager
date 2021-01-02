@@ -19,7 +19,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
         primaryStage.setTitle("Account Manager");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.setScene(new Scene(root, 600, 400));
         primaryStage.show();
     }
 
@@ -30,7 +30,7 @@ public class Main extends Application {
         HashMap<String, String> hashMap = new HashMap<>();
         db.loadDriver();
 
-        //Test code to see if I could get the results of a resultset
+        /* Test code to see if I could get the results of a resultset
         String table = "users";
         db.makeQuery("SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'account_manager' " +
                 "AND TABLE_NAME = '" + table + "'");
@@ -43,6 +43,8 @@ public class Main extends Application {
             count++;
         }
         resultSet.close();
+
+         */
 
     }
 }

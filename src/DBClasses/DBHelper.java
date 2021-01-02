@@ -1,6 +1,7 @@
 package DBClasses;
 
 import java.sql.*;
+import java.util.LinkedList;
 
 public class DBHelper {
     private static final String databaseName = "account_manager";
@@ -88,7 +89,6 @@ public class DBHelper {
         }
     }
 
-    //Returns a result
     public ResultSet getResult() {
         return rs;
     }
@@ -96,8 +96,6 @@ public class DBHelper {
     public Integer numOfColumns(String table) throws SQLException {
         dbConnect = DriverManager.getConnection(DB_URL, username, password);
         Statement stmt = dbConnect.createStatement();
-
-
         //Code to get the number of columns in a table
         rs = stmt.executeQuery("SELECT * FROM " + table + " where 1=2;");
         ResultSetMetaData rsmd = rs.getMetaData();
