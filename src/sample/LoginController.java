@@ -51,11 +51,12 @@ public class LoginController {
         }
     }
 
-    @FXML private void setRegisterButton(ActionEvent e) throws IOException {
-            Parent sceneViewParent = FXMLLoader.load(getClass().getResource("CalendarView.fxml"));
-            Scene sceneViewScene = new Scene(sceneViewParent);
-            Stage window = (Stage)((Node) e.getSource()).getScene().getWindow();
-            window.setScene(sceneViewScene);
-            window.show();
+    @FXML private void setRegisterButton(ActionEvent ev) throws IOException {
+        Parent sceneViewParent = FXMLLoader.load(getClass().getResource("register.fxml"));
+        Scene sceneViewScene = new Scene(sceneViewParent);
+        Stage window = (Stage)((Node) ev.getSource()).getScene().getWindow();
+        window.setScene(sceneViewScene);
+        window.show();
+        sceneViewParent.requestFocus();
     }
 }

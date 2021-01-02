@@ -30,7 +30,7 @@
                         <Insets left="30.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="registerButton" alignment="CENTER" mnemonicParsing="false" text="Register">
+                  <Button fx:id="registerButton" alignment="CENTER" mnemonicParsing="false" onAction="#setRegisterButton" text="Register">
                      <HBox.margin>
                         <Insets left="40.0" />
                      </HBox.margin>
@@ -42,7 +42,7 @@
             </HBox>
          </children>
       </VBox>
-      <TextArea editable="false" layoutX="36.0" layoutY="43.0" prefHeight="79.0" prefWidth="529.0" text="Welcome to Account Manager">
+      <TextArea editable="false" focusTraversable="false" layoutX="36.0" layoutY="43.0" prefHeight="79.0" prefWidth="529.0" text="Welcome to Account Manager">
          <font>
             <Font size="36.0" />
          </font>

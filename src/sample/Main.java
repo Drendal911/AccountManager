@@ -20,6 +20,7 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
         primaryStage.setTitle("Account Manager");
         primaryStage.setScene(new Scene(root, 600, 400));
+        root.requestFocus();
         primaryStage.show();
     }
 
