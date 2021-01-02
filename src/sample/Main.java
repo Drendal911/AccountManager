@@ -8,8 +8,10 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 
 public class Main extends Application {
 
@@ -22,27 +24,26 @@ public class Main extends Application {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         launch(args);
         DBHelper db = new DBHelper();
         HashMap<String, String> hashMap = new HashMap<>();
         db.loadDriver();
 
-
-        try {
-            db.makeQuery("select * from users;");
-            ResultSet resultSet = db.getResult();
-            resultSet.first();
-
-            hashMap.put(resultSet.getString("UserName"), resultSet.getString("Password"));
-            resultSet.close();
-
-            System.out.println(hashMap.get("123"));
-
-        }catch (SQLException | NullPointerException e) {
-            System.out.println(e.getMessage());
+        //Test code to see if I could get the results of a resultset
+        String table = "users";
+        db.makeQuery("SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'account_manager' " +
+                "AND TABLE_NAME = '" + table + "'");
+        ResultSet resultSet = db.getResult();
+        resultSet.first();
+        int count = 1;
+        while (count <= db.numOfColumns(table)) {
+            System.out.println(resultSet.getString(1));
+            resultSet.next();
+            count++;
         }
-
+        resultSet.close();
 
     }
 }
+

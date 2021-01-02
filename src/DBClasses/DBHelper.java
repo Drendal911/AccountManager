@@ -11,10 +11,7 @@ public class DBHelper {
     private static final String driver = "com.mysql.jdbc.Driver";
 
     Connection dbConnect;
-    private Statement stmt;
     private ResultSet rs;
-    private String query;
-
 
     public DBHelper() {
     }
@@ -75,24 +72,15 @@ public class DBHelper {
     //This class will handle different query types
     public void makeQuery (String q) throws SQLException {
         try {
-            query = q;
             dbConnect = DriverManager.getConnection(DB_URL, username, password);
-            stmt = dbConnect.createStatement();
-            String type = query.toLowerCase().substring(0,6);
+            Statement stmt = dbConnect.createStatement();
+            String type = q.toLowerCase().substring(0,6);
 
             switch (type) {
-                case ("select"):
-                    rs = stmt.executeQuery(query);
-                    break;
-                case ("delete"):
-                    stmt.executeUpdate(query);
-                    break;
-                case ("update"):
-                    stmt.executeUpdate(query);
-                    break;
-                case ("insert"):
-                    stmt.executeUpdate(query);
-                    break;
+                case ("select") -> rs = stmt.executeQuery(q);
+                case ("delete") -> stmt.executeUpdate(q);
+                case ("update") -> stmt.executeUpdate(q);
+                case ("insert") -> stmt.executeUpdate(q);
             }
         }
         catch (SQLException e) {
@@ -104,4 +92,21 @@ public class DBHelper {
     public ResultSet getResult() {
         return rs;
     }
+
+    public Integer numOfColumns(String table) throws SQLException {
+        dbConnect = DriverManager.getConnection(DB_URL, username, password);
+        Statement stmt = dbConnect.createStatement();
+
+
+        //Code to get the number of columns in a table
+        rs = stmt.executeQuery("SELECT * FROM " + table + " where 1=2;");
+        ResultSetMetaData rsmd = rs.getMetaData();
+        rs.close();
+        stmt.close();
+        dbConnect.close();
+        return rsmd.getColumnCount();
+    }
+
 }
+
+
