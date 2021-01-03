@@ -74,10 +74,10 @@
             </Label>
             <TableView fx:id="dTableView" layoutY="41.0" prefHeight="590.0" prefWidth="469.0">
               <columns>
-                <TableColumn prefWidth="75.0" text="Num/Type" />
-                <TableColumn prefWidth="153.0" text="Payer/Memo" />
-                  <TableColumn prefWidth="121.0" text="Date" />
-                  <TableColumn prefWidth="119.0" text="Amount" />
+                <TableColumn fx:id="dNumTypeColumn" prefWidth="75.0" text="Num/Type" />
+                <TableColumn fx:id="dPayerMemoColumn" prefWidth="153.0" text="Payer/Memo" />
+                  <TableColumn fx:id="dDateColumn" prefWidth="121.0" text="Date" />
+                  <TableColumn fx:id="dAmtColumn" prefWidth="119.0" text="Amount" />
               </columns>
             </TableView>
             <VBox layoutX="369.0" layoutY="631.0" prefHeight="47.0" prefWidth="100.0">
