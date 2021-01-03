@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="790.0" prefWidth="993.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.DashboardController">
+   <children>
+      <AnchorPane layoutX="14.0" layoutY="108.0" prefHeight="671.0" prefWidth="469.0">
+         <children>
+            <Label layoutX="170.0" layoutY="6.0" text="Withdrawals">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <TableView fx:id="wTableView" layoutY="41.0" prefHeight="590.0" prefWidth="469.0">
+              <columns>
+                <TableColumn fx:id="wNumTypeColumn" prefWidth="74.0" text="Num/Type" />
+                <TableColumn fx:id="wPayeeReasonColumn" prefWidth="176.0" text="Payee/Reason" />
+                  <TableColumn fx:id="wDateColumn" prefWidth="103.0" text="Date" />
+                  <TableColumn fx:id="wAmtColumn" minWidth="0.0" prefWidth="115.0" text="Amount" />
+              </columns>
+            </TableView>
+            <VBox layoutY="-71.0" prefHeight="95.0" prefWidth="121.0">
+               <children>
+                  <Label alignment="CENTER" prefHeight="17.0" prefWidth="166.0" text="Account" underline="true">
+                     <font>
+                        <Font name="System Bold" size="24.0" />
+                     </font>
+                  </Label>
+                  <RadioButton fx:id="checkingRadioButton" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="27.0" prefWidth="112.0" text="Checking">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </RadioButton>
+                  <RadioButton fx:id="savingsRadioButton" contentDisplay="CENTER" layoutX="10.0" layoutY="27.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="112.0" text="Savings">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </RadioButton>
+               </children>
+            </VBox>
+            <VBox layoutX="349.0" layoutY="631.0" prefHeight="47.0" prefWidth="112.0">
+               <children>
+                  <Label text="Withdrawals Total" underline="true">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="wTotalLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="110.0" text="Amt">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="508.0" layoutY="108.0" prefHeight="671.0" prefWidth="469.0">
+         <children>
+            <Label layoutX="189.0" layoutY="6.0" text="Deposits">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <TableView fx:id="dTableView" layoutY="41.0" prefHeight="590.0" prefWidth="469.0">
+              <columns>
+                <TableColumn prefWidth="75.0" text="Num/Type" />
+                <TableColumn prefWidth="153.0" text="Payer/Memo" />
+                  <TableColumn prefWidth="121.0" text="Date" />
+                  <TableColumn prefWidth="119.0" text="Amount" />
+              </columns>
+            </TableView>
+            <VBox layoutX="369.0" layoutY="631.0" prefHeight="47.0" prefWidth="100.0">
+               <children>
+                  <Label alignment="CENTER" prefHeight="20.0" prefWidth="104.0" text="Deposit Total" underline="true">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="dTotalLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="104.0" text="Amt">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
+      <HBox layoutX="243.0" layoutY="81.0" prefHeight="27.0" prefWidth="736.0">
+         <children>
+            <Label layoutX="261.0" layoutY="10.0" text="Table">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <ChoiceBox fx:id="tableChoiceBox" layoutX="328.0" layoutY="10.0" prefWidth="150.0">
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
+            </ChoiceBox>
+            <Label text="Column">
+               <font>
+                  <Font size="18.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Label>
+            <ChoiceBox fx:id="columnChoiceBox" prefWidth="150.0">
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
+            </ChoiceBox>
+            <TextField fx:id="searchTextField" prefHeight="25.0" prefWidth="243.0" promptText="Select table/column then enter search item">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </TextField>
+            <Button fx:id="searchButton" mnemonicParsing="false" text="Search">
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

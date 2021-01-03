@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -16,22 +17,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class LoginController {
-    DBHelper db = new DBHelper();
-    DialogBox dialogBox = new DialogBox();
-    @FXML
-    private TextField userNameTextField, passwordTextField;
+    private DBHelper db = new DBHelper();
+    private DialogBox dialogBox = new DialogBox();
 
-
-
-
-    /* METHODS *********************************************************************************************************
-    ********************************************************************************************************************
-    *******************************************************************************************************************/
-
+    @FXML TextField userNameTextField;
+    @FXML PasswordField passwordField;
 
     @FXML private void setLoginButton(ActionEvent e) {
         String username = userNameTextField.getText();
-        String password = passwordTextField.getText();
+        String password = passwordField.getText();
 
         try {
             db.makeQuery("select * from users where UserName = '" + username + "'");

@@ -30,23 +30,6 @@ public class Main extends Application {
         DBHelper db = new DBHelper();
         HashMap<String, String> hashMap = new HashMap<>();
         db.loadDriver();
-
-        /* Test code to see if I could get the results of a resultset
-        String table = "users";
-        db.makeQuery("SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'account_manager' " +
-                "AND TABLE_NAME = '" + table + "'");
-        ResultSet resultSet = db.getResult();
-        resultSet.first();
-        int count = 1;
-        while (count <= db.numOfColumns(table)) {
-            System.out.println(resultSet.getString(1));
-            resultSet.next();
-            count++;
-        }
-        resultSet.close();
-
-         */
-
     }
 }
 

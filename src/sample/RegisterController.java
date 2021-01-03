@@ -16,7 +16,7 @@ import java.sql.SQLException;
 
 public class RegisterController {
     @FXML
-    private TextField registerUsernameTextField, registerPasswordTextField;
+    TextField registerUsernameTextField, registerPasswordTextField;
 
 
     @FXML private void setCancelButton(ActionEvent ev) throws IOException {
