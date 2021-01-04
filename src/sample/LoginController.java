@@ -28,7 +28,7 @@ public class LoginController {
         String password = passwordField.getText();
 
         try {
-            db.makeQuery("select * from users where UserName = '" + username + "'");
+            db.makeQuery("select", "users", "UserName", username);
             ResultSet resultSet = db.getResult();
             resultSet.first();
             String pw = resultSet.getString("Password");

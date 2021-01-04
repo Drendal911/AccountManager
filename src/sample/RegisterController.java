@@ -12,7 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class RegisterController {
     @FXML
@@ -28,7 +28,8 @@ public class RegisterController {
         sceneViewParent.requestFocus();
     }
 
-    @FXML private void setRegisterButton(ActionEvent ev) throws IOException, SQLException {
+    @FXML private void setRegisterButton(ActionEvent ev) {
+        DBHelper db = new DBHelper();
         DialogBox dialogBox = new DialogBox();
         String username = registerUsernameTextField.getText();
         String password = registerPasswordTextField.getText();
@@ -37,12 +38,32 @@ public class RegisterController {
             dialogBox.infoAlertDialog("Incomplete Fields", "Please complete both 'Username' and " +
                     "'Password' fields, then click the 'Register' button.");
         }else {
-            DBHelper db = new DBHelper();
-            db.makeQuery("insert into users values (null, '" + username + "', '" + password + "');");
-            dialogBox.infoAlertDialog("Account Registered", "Operation complete, " +
-                    "account successfully registered");
+            try {
+                //Check db to see if the username is already in use.
+                Connection con = db.makeConnection();
+                PreparedStatement pStmt;
+                String query = "select * from users where UserName = ?";
+                pStmt = con.prepareStatement(query);
+                pStmt.setString(1, username);
+                ResultSet rs = pStmt.executeQuery();
+                if (rs.next()) {
+                    dialogBox.infoAlertDialog("Invalid Username",
+                            "Username already in use. Please enter a unique username and try again.");
+                }else {
+                    query = "insert into users values (?, ?)";
+                    pStmt = con.prepareStatement(query);
+                    pStmt.setString(1, username);
+                    pStmt.setString(2, password);
+                    dialogBox.infoAlertDialog("Account Registered", "Operation complete, " +
+                            "account successfully registered");
+                }
+            }catch (Exception ex) {
+                System.out.println("Error!");
+                System.out.println(ex.getMessage());
+                System.out.println(ex.getClass());
+            }
 
-            Parent sceneViewParent = FXMLLoader.load(getClass().getResource("login.fxml"));   //change the resource here so it takes you into the app instead of having to login again
+            Parent sceneViewParent = FXMLLoader.load(getClass().getResource("dashboard.fxml"));   //change the resource here so it takes you into the app instead of having to login again
             Scene sceneViewScene = new Scene(sceneViewParent);
             Stage window = (Stage)((Node) ev.getSource()).getScene().getWindow();
             window.setScene(sceneViewScene);

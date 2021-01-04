@@ -88,11 +88,11 @@ public class DashboardController implements Initializable {
 
 
 
-    private void getTransactions(String type) throws SQLException {
+    private void getTransactions(String table) throws SQLException {
         DBHelper db = new DBHelper();
         ResultSet rs;
         ObservableList<ListItem> observableList = FXCollections.observableArrayList();
-        db.makeQuery("select * from check_" + type);
+        db.makeQuery("select", "check_" + table);
         rs = db.getResult();
         while (rs.next()) {
             String checkNum = rs.getString(7);
@@ -100,15 +100,15 @@ public class DashboardController implements Initializable {
             Date date = rs.getDate(6);
             int amt = rs.getInt(3);
             ListItem listItem = new ListItem(checkNum, payee, date, amt);
-            if (type.equals("withdrawal")) {
+            if (table.equals("withdrawal")) {
                 wObservableList.add(listItem);
-            }else if (type.equals("deposit")) {
+            }else if (table.equals("deposit")) {
                 dObservableList.add(listItem);
             }
         }
         rs.close();
 
-        db.makeQuery("select * from non_check_" + type);
+        db.makeQuery("select", "non_check_" + table);
         rs = db.getResult();
         while (rs.next()) {
             String wdtype = rs.getString(7);
@@ -116,9 +116,9 @@ public class DashboardController implements Initializable {
             Date date = rs.getDate(6);
             int amt = rs.getInt(3);
             ListItem listItem = new ListItem(wdtype, reason, date, amt);
-            if (type.equals("withdrawal")) {
+            if (table.equals("withdrawal")) {
                 wObservableList.add(listItem);
-            }else if (type.equals("deposit")) {
+            }else if (table.equals("deposit")) {
                 dObservableList.add(listItem);
             }
         }
