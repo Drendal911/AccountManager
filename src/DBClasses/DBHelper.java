@@ -31,44 +31,6 @@ public class DBHelper {
             System.out.println("Something went wrong. Driver not loaded.");
         }
     }
-/*
-    public void dbExecStmt(String s) throws SQLException {
-        try {
-            dbConnect = DriverManager.getConnection(DB_URL, username, password);
-            System.out.println("Connection Successful!");
-
-            stmt = dbConnect.createStatement();
-            stmt.execute(s);
-            dbConnect.close();
-            System.out.println("Database updated.");
-        }catch (SQLException ex) {
-            // handle any errors
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
-        }
-    }
-
-    //DB call used with SELECT statements
-    public ResultSet dbGetResSet(String s) throws SQLException {
-        dbConnect = null;
-        try {
-            dbConnect = DriverManager.getConnection(DB_URL, username, password);
-            stmt = dbConnect.createStatement();
-            stmt.executeQuery(s);
-            rs = stmt.getResultSet();
-
-        }catch (SQLException ex) {
-            // handle any errors
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
-            dbConnect.rollback();
-            dbConnect.close();
-        }
-        return rs;
-    }
-*/
 
     //This class will handle different query types
     public void makeQuery (String q) throws SQLException {
