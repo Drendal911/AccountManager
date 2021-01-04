@@ -33,7 +33,6 @@ public class LoginController {
             String query = "select * from users where UserName = ?";
             PreparedStatement pStmt = con.prepareStatement(query);
             pStmt.setString(1, username);
-
             ResultSet resultSet = pStmt.executeQuery();
             resultSet.first();
             String pw = resultSet.getString("Password");
