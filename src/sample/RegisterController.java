@@ -41,14 +41,14 @@ public class RegisterController {
             try {
                 //Check db to see if the username is already in use.
                 Connection con = db.makeConnection();
-                PreparedStatement pStmt;
                 String query = "select * from users where UserName = ?";
-                pStmt = con.prepareStatement(query);
+                PreparedStatement pStmt = con.prepareStatement(query);
                 pStmt.setString(1, username);
                 ResultSet rs = pStmt.executeQuery();
                 if (rs.next()) {
                     dialogBox.infoAlertDialog("Invalid Username",
                             "Username already in use. Please enter a unique username and try again.");
+                    con.close();
                 }else {
                     query = "insert into users values (?, ?)";
                     pStmt = con.prepareStatement(query);
@@ -56,19 +56,26 @@ public class RegisterController {
                     pStmt.setString(2, password);
                     dialogBox.infoAlertDialog("Account Registered", "Operation complete, " +
                             "account successfully registered");
+                    con.close();
+                    try {
+                        Parent sceneViewParent = FXMLLoader.load(getClass().getResource("login.fxml"));
+                        Scene sceneViewScene = new Scene(sceneViewParent);
+                        Stage window = (Stage)((Node) ev.getSource()).getScene().getWindow();
+                        window.setScene(sceneViewScene);
+                        window.show();
+                        sceneViewParent.requestFocus();
+                    }catch (IOException ex) {
+                        System.out.println("Error! " + ex.getMessage());
+                        System.out.println(ex.getClass());
+                    }
                 }
             }catch (Exception ex) {
-                System.out.println("Error!");
-                System.out.println(ex.getMessage());
+                System.out.println("Error! " + ex.getMessage());
                 System.out.println(ex.getClass());
             }
 
-            Parent sceneViewParent = FXMLLoader.load(getClass().getResource("dashboard.fxml"));   //change the resource here so it takes you into the app instead of having to login again
-            Scene sceneViewScene = new Scene(sceneViewParent);
-            Stage window = (Stage)((Node) ev.getSource()).getScene().getWindow();
-            window.setScene(sceneViewScene);
-            window.show();
-            sceneViewParent.requestFocus();
+
+
         }
 
 

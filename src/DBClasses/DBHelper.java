@@ -26,7 +26,7 @@ public class DBHelper {
             //load the jdbc driver
             Class.forName(driver);
         }catch (Exception ex) {
-            System.out.println("Something went wrong. Driver not loaded.");
+            System.out.println("Something went wrong. JDBC Driver not loaded.");
         }
     }
 

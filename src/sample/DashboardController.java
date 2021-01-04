@@ -72,12 +72,15 @@ public class DashboardController implements Initializable {
         columnChoiceBox.getItems().add("Payee/Reason");
         columnChoiceBox.getItems().add("Date");
         columnChoiceBox.getItems().add("Amount");
+        /*
         try {
             getTransactions("withdrawal");
             getTransactions("deposit");
         }catch (SQLException ex){
             System.out.println(ex.getMessage());
         }
+
+         */
     }
 
 
@@ -87,7 +90,7 @@ public class DashboardController implements Initializable {
     *******************************************************************************************************************/
 
 
-
+/*
     private void getTransactions(String table) throws SQLException {
         DBHelper db = new DBHelper();
         ResultSet rs;
@@ -125,4 +128,6 @@ public class DashboardController implements Initializable {
         rs.close();
     }
 
+
+ */
 }
