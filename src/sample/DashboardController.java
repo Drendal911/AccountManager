@@ -100,7 +100,11 @@ public class DashboardController implements Initializable {
             Date date = rs.getDate(6);
             int amt = rs.getInt(3);
             ListItem listItem = new ListItem(checkNum, payee, date, amt);
-            wObservableList.add(listItem);
+            if (type.equals("withdrawal")) {
+                wObservableList.add(listItem);
+            }else if (type.equals("deposit")) {
+                dObservableList.add(listItem);
+            }
         }
         rs.close();
 
@@ -112,8 +116,13 @@ public class DashboardController implements Initializable {
             Date date = rs.getDate(6);
             int amt = rs.getInt(3);
             ListItem listItem = new ListItem(wdtype, reason, date, amt);
-            wObservableList.add(listItem);
+            if (type.equals("withdrawal")) {
+                wObservableList.add(listItem);
+            }else if (type.equals("deposit")) {
+                dObservableList.add(listItem);
+            }
         }
+        rs.close();
     }
 
 }
