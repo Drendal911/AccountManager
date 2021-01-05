@@ -103,7 +103,7 @@
                   <Font size="18.0" />
                </font>
             </Label>
-            <ChoiceBox fx:id="tableChoiceBox" layoutX="328.0" layoutY="10.0" prefWidth="150.0">
+            <ChoiceBox fx:id="searchTableChoiceBox" layoutX="328.0" layoutY="10.0" prefWidth="150.0">
                <HBox.margin>
                   <Insets left="5.0" />
                </HBox.margin>
@@ -116,7 +116,7 @@
                   <Insets left="10.0" />
                </HBox.margin>
             </Label>
-            <ChoiceBox fx:id="columnChoiceBox" prefWidth="150.0">
+            <ChoiceBox fx:id="searchColumnChoiceBox" prefWidth="150.0">
                <HBox.margin>
                   <Insets left="5.0" />
                </HBox.margin>
@@ -129,6 +129,38 @@
             <Button fx:id="searchButton" mnemonicParsing="false" text="Search">
                <HBox.margin>
                   <Insets left="5.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+      <HBox layoutX="441.0" layoutY="39.0" prefHeight="25.0" prefWidth="538.0">
+         <children>
+            <Label text="Table">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <ChoiceBox fx:id="addTableItemChoiceBox" prefWidth="150.0">
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
+            </ChoiceBox>
+            <Label text="Column">
+               <font>
+                  <Font size="18.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Label>
+            <ChoiceBox fx:id="addColumnItemChoiceBox" prefWidth="150.0">
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
+            </ChoiceBox>
+            <Button fx:id="addTransactionButton" mnemonicParsing="false" text="Add Transaction">
+               <HBox.margin>
+                  <Insets left="10.0" />
                </HBox.margin>
             </Button>
          </children>

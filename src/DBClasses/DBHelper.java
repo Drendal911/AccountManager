@@ -1,7 +1,6 @@
 package DBClasses;
 
 import java.sql.*;
-import java.util.LinkedList;
 
 public class DBHelper {
     private static final String databaseName = "account_manager";

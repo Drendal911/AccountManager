@@ -1,7 +1,7 @@
 package sample;
 
 import DBClasses.DBHelper;
-import DBClasses.Transaction;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -9,7 +9,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
 import java.net.URL;
-import java.sql.*;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ResourceBundle;
 
 public class DashboardController implements Initializable {
@@ -17,11 +20,12 @@ public class DashboardController implements Initializable {
     @FXML TableView<String> wTableView, dTableView;
     @FXML TableColumn wNumTypeColumn, wPayeeReasonColumn, wDateColumn, wAmtColumn, dNumTypeColumn, dPayerMemoColumn,
             dDateColumn, dAmtColumn;
-    @FXML ChoiceBox<String> columnChoiceBox, tableChoiceBox;
-    @FXML Button searchButton;
+    @FXML ChoiceBox<String> searchColumnChoiceBox, searchTableChoiceBox, addColumnItemChoiceBox, addTableItemChoiceBox;
+    @FXML Button searchButton, addTransactionButton;
     @FXML RadioButton checkingRadioButton, savingsRadioButton;
     private ObservableList<ListItem> wObservableList = FXCollections.observableArrayList();
     private ObservableList<ListItem> dObservableList = FXCollections.observableArrayList();
+    private ObservableList<String> columnChoiceBoxList = FXCollections.observableArrayList();
 
 
     private class ListItem {
@@ -66,14 +70,17 @@ public class DashboardController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         wObservableList.clear();
         dObservableList.clear();
-        columnChoiceBox.getItems().add("Num/Type");
-        columnChoiceBox.getItems().add("Payee/Reason");
-        columnChoiceBox.getItems().add("Date");
-        columnChoiceBox.getItems().add("Amount");
-
+        searchColumnChoiceBox.getItems().addAll("Num/Type", "Payee/Reason", "Date", "Amount");
+        searchTableChoiceBox.getItems().addAll("Withdrawals", "Deposits");
+        addTableItemChoiceBox.getItems().addAll("Check Withdrawal", "Non-Check Withdrawal", "Check Deposit",
+                "Non-Check Deposit");
         getTransactions("withdrawal");
         getTransactions("deposit");
 
+        //Set listener for addTableItemChoiceBox and adjusts the available selections for addColumnItemChoiceBox
+        //addTableItemChoiceBox.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> System.out.println(newValue) );
+        addTableItemChoiceBox.getSelectionModel().selectedItemProperty().addListener((ObservableValue<?
+                extends String> observable, String oldValue, String newValue) -> setAddColumnItemChoiceBox() );
     }
 
 
@@ -131,6 +138,21 @@ public class DashboardController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    private void setAddColumnItemChoiceBox() {
+        if (columnChoiceBoxList != null) {
+            columnChoiceBoxList.clear();
+        }
+        String string = addTableItemChoiceBox.getSelectionModel().getSelectedItem();
+        switch (string) {
+            case "Check Withdrawal" -> columnChoiceBoxList.addAll("Check Number", "Payee", "Date", "Amount");
+            case "Non-Check Withdrawal" -> columnChoiceBoxList.addAll("Type", "Reason", "Date", "Amount");
+            case "Check Deposit" -> columnChoiceBoxList.addAll("Check Number", "Payer", "Date", "Amount");
+            case "Non-Check Deposit" -> columnChoiceBoxList.addAll("Type", "Memo", "Date", "Amount");
+        }
+        addColumnItemChoiceBox.setItems(columnChoiceBoxList);
     }
 
 }
