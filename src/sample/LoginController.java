@@ -36,7 +36,10 @@ public class LoginController {
             ResultSet resultSet = pStmt.executeQuery();
             resultSet.first();
             String pw = resultSet.getString("Password");
+            pStmt.close();
             resultSet.close();
+            con.close();
+            db.closeConnection();
 
             if (password.equals(pw)) {
                 Parent sceneViewParent = FXMLLoader.load(getClass().getResource("dashboard.fxml"));
@@ -46,10 +49,12 @@ public class LoginController {
                 window.show();
                 sceneViewParent.requestFocus();
                 con.close();
+                db.closeConnection();
             }else {
                 dialogBox.infoAlertDialog("Password Incorrect",
                         "The password you entered is incorrect. Please check the password and try again");
                 con.close();
+                db.closeConnection();
             }
         }catch (SQLException ex) {
             dialogBox.infoAlertDialog("USER NOT FOUND", "Please check the 'Username' field, " +
