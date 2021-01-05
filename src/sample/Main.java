@@ -7,11 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
 
 public class Main extends Application {
 
@@ -28,7 +24,6 @@ public class Main extends Application {
     public static void main(String[] args) throws SQLException {
         launch(args);
         DBHelper db = new DBHelper();
-        HashMap<String, String> hashMap = new HashMap<>();
         db.loadDriver();
     }
 }

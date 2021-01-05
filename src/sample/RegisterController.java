@@ -73,11 +73,6 @@ public class RegisterController {
                 System.out.println("Error! " + ex.getMessage());
                 System.out.println(ex.getClass());
             }
-
-
-
         }
-
-
     }
 }

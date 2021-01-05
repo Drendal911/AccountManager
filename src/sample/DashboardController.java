@@ -1,6 +1,7 @@
 package sample;
 
 import DBClasses.DBHelper;
+import Utility.DialogBox;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,13 +21,12 @@ public class DashboardController implements Initializable {
     @FXML TableView<String> wTableView, dTableView;
     @FXML TableColumn wNumTypeColumn, wPayeeReasonColumn, wDateColumn, wAmtColumn, dNumTypeColumn, dPayerMemoColumn,
             dDateColumn, dAmtColumn;
-    @FXML ChoiceBox<String> searchColumnChoiceBox, searchTableChoiceBox, addColumnItemChoiceBox, addTableItemChoiceBox;
+    @FXML ChoiceBox<String> searchColumnChoiceBox, searchTableChoiceBox, addTableItemChoiceBox;
     @FXML Button searchButton, addTransactionButton;
     @FXML RadioButton checkingRadioButton, savingsRadioButton;
     private ObservableList<ListItem> wObservableList = FXCollections.observableArrayList();
     private ObservableList<ListItem> dObservableList = FXCollections.observableArrayList();
     private ObservableList<String> columnChoiceBoxList = FXCollections.observableArrayList();
-
 
     private class ListItem {
         String numType, payeeReason;
@@ -70,17 +70,17 @@ public class DashboardController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         wObservableList.clear();
         dObservableList.clear();
-        searchColumnChoiceBox.getItems().addAll("Num/Type", "Payee/Reason", "Date", "Amount");
-        searchTableChoiceBox.getItems().addAll("Withdrawals", "Deposits");
+        //searchColumnChoiceBox.getItems().addAll("Num/Type", "Payee/Reason", "Date", "Amount");
+        searchTableChoiceBox.getItems().addAll("Check Withdrawal", "Non-Check Withdrawal", "Check Deposit",
+                "Non-Check Deposit");
         addTableItemChoiceBox.getItems().addAll("Check Withdrawal", "Non-Check Withdrawal", "Check Deposit",
                 "Non-Check Deposit");
         getTransactions("withdrawal");
         getTransactions("deposit");
 
         //Set listener for addTableItemChoiceBox and adjusts the available selections for addColumnItemChoiceBox
-        //addTableItemChoiceBox.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> System.out.println(newValue) );
-        addTableItemChoiceBox.getSelectionModel().selectedItemProperty().addListener((ObservableValue<?
-                extends String> observable, String oldValue, String newValue) -> setAddColumnItemChoiceBox() );
+        searchTableChoiceBox.getSelectionModel().selectedItemProperty().addListener((ObservableValue<?
+                extends String> observable, String oldValue, String newValue) -> setSearchColumnItemChoiceBox() );
     }
 
 
@@ -92,6 +92,8 @@ public class DashboardController implements Initializable {
     private void getTransactions(String table) {
         DBHelper db = new DBHelper();
         ResultSet rs;
+        if (wObservableList != null) {wObservableList.clear();}
+        if (dObservableList != null) {dObservableList.clear();}
 
         try {
             String query = "select * from check_" + table;
@@ -111,6 +113,7 @@ public class DashboardController implements Initializable {
             }
             rs.close();
             stmt.close();
+            db.closeConnection();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -133,6 +136,7 @@ public class DashboardController implements Initializable {
             }
             rs.close();
             stmt.close();
+            db.closeConnection();
         }catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -140,19 +144,20 @@ public class DashboardController implements Initializable {
         }
     }
 
-
-    private void setAddColumnItemChoiceBox() {
+    private void setSearchColumnItemChoiceBox() {
         if (columnChoiceBoxList != null) {
             columnChoiceBoxList.clear();
         }
-        String string = addTableItemChoiceBox.getSelectionModel().getSelectedItem();
+        String string = searchTableChoiceBox.getSelectionModel().getSelectedItem();
         switch (string) {
             case "Check Withdrawal" -> columnChoiceBoxList.addAll("Check Number", "Payee", "Date", "Amount");
             case "Non-Check Withdrawal" -> columnChoiceBoxList.addAll("Type", "Reason", "Date", "Amount");
             case "Check Deposit" -> columnChoiceBoxList.addAll("Check Number", "Payer", "Date", "Amount");
             case "Non-Check Deposit" -> columnChoiceBoxList.addAll("Type", "Memo", "Date", "Amount");
         }
-        addColumnItemChoiceBox.setItems(columnChoiceBoxList);
+        searchColumnChoiceBox.setItems(columnChoiceBoxList);
     }
+
+    
 
 }

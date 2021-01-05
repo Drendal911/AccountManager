@@ -133,7 +133,7 @@
             </Button>
          </children>
       </HBox>
-      <HBox layoutX="441.0" layoutY="39.0" prefHeight="25.0" prefWidth="538.0">
+      <HBox layoutX="669.0" layoutY="39.0" prefHeight="27.0" prefWidth="310.0">
          <children>
             <Label text="Table">
                <font>
@@ -141,19 +141,6 @@
                </font>
             </Label>
             <ChoiceBox fx:id="addTableItemChoiceBox" prefWidth="150.0">
-               <HBox.margin>
-                  <Insets left="5.0" />
-               </HBox.margin>
-            </ChoiceBox>
-            <Label text="Column">
-               <font>
-                  <Font size="18.0" />
-               </font>
-               <HBox.margin>
-                  <Insets left="10.0" />
-               </HBox.margin>
-            </Label>
-            <ChoiceBox fx:id="addColumnItemChoiceBox" prefWidth="150.0">
                <HBox.margin>
                   <Insets left="5.0" />
                </HBox.margin>
