@@ -5,10 +5,17 @@ import Utility.DialogBox;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -158,6 +165,63 @@ public class DashboardController implements Initializable {
         searchColumnChoiceBox.setItems(columnChoiceBoxList);
     }
 
-    
+    public void setAddTransactionButton(ActionEvent ev) {
+        try {
+            String strTable = addTableItemChoiceBox.getSelectionModel().getSelectedItem();
+            switch (strTable) {
+                case "Check Withdrawal" -> {
+                    Parent sceneViewParent = FXMLLoader.load(getClass().getResource("addCheckWithdrawal.fxml"));
+                    Scene sceneViewScene = new Scene(sceneViewParent);
+                    Stage window = (Stage) ((Node) ev.getSource()).getScene().getWindow();
+                    window.setScene(sceneViewScene);
+                    window.show();
+                    sceneViewParent.requestFocus();
+                }
+                case "Non-Check Withdrawal" -> {
+                    Parent sceneViewParent = FXMLLoader.load(getClass().getResource("addNonCheckWithdrawal.fxml"));
+                    Scene sceneViewScene = new Scene(sceneViewParent);
+                    Stage window = (Stage) ((Node) ev.getSource()).getScene().getWindow();
+                    window.setScene(sceneViewScene);
+                    window.show();
+                    sceneViewParent.requestFocus();
+                }
+                case "Check Deposit" -> {
+                    Parent sceneViewParent = FXMLLoader.load(getClass().getResource("addCheckDeposit.fxml"));
+                    Scene sceneViewScene = new Scene(sceneViewParent);
+                    Stage window = (Stage) ((Node) ev.getSource()).getScene().getWindow();
+                    window.setScene(sceneViewScene);
+                    window.show();
+                    sceneViewParent.requestFocus();
+                }
+                case "Non-Check Deposit" -> {
+                    Parent sceneViewParent = FXMLLoader.load(getClass().getResource("addNonCheckDeposit.fxml"));
+                    Scene sceneViewScene = new Scene(sceneViewParent);
+                    Stage window = (Stage) ((Node) ev.getSource()).getScene().getWindow();
+                    window.setScene(sceneViewScene);
+                    window.show();
+                    sceneViewParent.requestFocus();
+                }
+            }
+        }catch (NullPointerException ex) {
+            DialogBox dialogBox = new DialogBox();
+            dialogBox.infoAlertDialog("Missing Information", "Please select the table where you " +
+                    "want to add a transaction.");
+        }catch (IOException ex) {
+            System.out.println("Error! " + ex.getMessage());
+            System.out.println(ex.getClass());
+        }
+    }
+
+    public void setSearchButton() {
+        String strTable = searchTableChoiceBox.getSelectionModel().getSelectedItem();
+        String strColumn = searchTableChoiceBox.getSelectionModel().getSelectedItem();
+        if (strTable.equals("") || strColumn.equals("")) {
+            DialogBox dialogBox = new DialogBox();
+            dialogBox.infoAlertDialog("Missing Information", "Please select both a table and " +
+                    "column to search for.");
+        }else {
+            //******************************************************************************************************************************************************************************************************************
+        }
+    }
 
 }

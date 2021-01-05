@@ -126,7 +126,7 @@
                   <Insets left="10.0" />
                </HBox.margin>
             </TextField>
-            <Button fx:id="searchButton" mnemonicParsing="false" text="Search">
+            <Button fx:id="searchButton" mnemonicParsing="false" onAction="#setSearchButton" text="Search">
                <HBox.margin>
                   <Insets left="5.0" />
                </HBox.margin>
@@ -145,7 +145,7 @@
                   <Insets left="5.0" />
                </HBox.margin>
             </ChoiceBox>
-            <Button fx:id="addTransactionButton" mnemonicParsing="false" text="Add Transaction">
+            <Button fx:id="addTransactionButton" mnemonicParsing="false" onAction="#setAddTransactionButton" text="Add Transaction">
                <HBox.margin>
                   <Insets left="10.0" />
                </HBox.margin>
