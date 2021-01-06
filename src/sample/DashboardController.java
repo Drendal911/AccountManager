@@ -148,8 +148,7 @@ public class DashboardController implements Initializable {
             }
             rs.close();
             stmt.close();
-        }catch (SQLException | ClassNotFoundException e) {e.printStackTrace();
-        }catch (Exception e) {e.printStackTrace();}
+        } catch (Exception e) {System.out.println(e.getMessage());}
     }
 
     private void setSearchColumnItemChoiceBox() {
@@ -224,67 +223,140 @@ public class DashboardController implements Initializable {
     }
 
     public void setSearchButton() {
-        //String table;
+        String table;
         String column;
         String strTable = searchTableChoiceBox.getSelectionModel().getSelectedItem();
         String strColumn = searchColumnChoiceBox.getSelectionModel().getSelectedItem();
         String strTextField = searchTextField.getText();
+        boolean tChoiceBoxEmpty = searchTableChoiceBox.getSelectionModel().isEmpty();
+        boolean cChoiceBoxEmpty = searchColumnChoiceBox.getSelectionModel().isEmpty();
+        boolean sTextFieldEmpty = searchTextField.getText().isEmpty();
 
-        if (strTable == null || strColumn == null) {
+        if (tChoiceBoxEmpty) {
             DialogBox dialogBox = new DialogBox();
-            dialogBox.infoAlertDialog("Missing Information", "Please select both a table and " +
-                    "column to search for.");
+            dialogBox.infoAlertDialog("Missing Information", "Please select a table from the drop " +
+                    "down menu and click the search button to display a table. Or select a table and column form the " +
+                    "drop down menus and enter an enter the column entry into the search text field to search for a " +
+                    "specific item.");
+        }else if (!cChoiceBoxEmpty && sTextFieldEmpty){
+            DialogBox dialogBox = new DialogBox();
+            dialogBox.infoAlertDialog("Missing Information", "Please select a table from the drop " +
+                    "down menu and click the search button to display a table. Or select a table and column form the " +
+                    "drop down menus and enter an enter the column entry into the search text field to search for a " +
+                    "specific item.");
+        }else if (cChoiceBoxEmpty && !sTextFieldEmpty){
+            DialogBox dialogBox = new DialogBox();
+            dialogBox.infoAlertDialog("Missing Information", "Please select a table from the drop " +
+                    "down menu and click the search button to display a table. Or select a table and column form the " +
+                    "drop down menus and enter an enter the column entry into the search text field to search for a " +
+                    "specific item.");
         }
-
-        assert strTable != null;
-        String table = switch (strTable) {
-            case "Check Withdrawal" -> table = "check_withdrawal";
-            case "Non-Check Withdrawal" -> table = "non_check_withdrawal";
-            case "Check Deposit" -> table = "check_deposit";
-            case "Non-Check Deposit" -> table = "non_check_deposit";
-            default -> throw new IllegalStateException("Unexpected value: " + strTable);
-        };
-
-        if (strTable.contains("Check Withdrawal") || strTable.contains("Non-Check Withdrawal")){
-            switch (Objects.requireNonNull(strColumn)) {
-                case "Check Number" -> column = "checkNum";
-                case "Payee" -> column = "payee";
-                case "Date" -> column = "date";
-                case "Amount" -> column = "amt";
-                case "Type" -> column = "withdrawalType";
-                case "Reason" -> column = "withdrawalReason";
+/*
+        if (!tChoiceBoxEmpty && cChoiceBoxEmpty && sTextFieldEmpty) {
+            table = setTable(strTable);
+            DBHelper db = new DBHelper();
+            ObservableList<ListItem> searchObservableList = FXCollections.observableArrayList();
+            try {
+                Statement stmt = db.makeConnection().createStatement();
+                ResultSet rs = stmt.executeQuery("select * from " + table);
+                while (rs.next()) {
+                    String checkNum = rs.getString(7);
+                    String payee = rs.getString(8);
+                    Date date = rs.getDate(6);
+                    int amt = rs.getInt(3);
+                    ListItem listItem = new ListItem(checkNum, payee, date, amt);
+                    searchObservableList.add(listItem);
+                }
+                rs.close();
+                stmt.close();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
             }
-        }
-        if (strTable.contains("Check Deposit") || strTable.contains("Non-Check Deposit")) {
-            switch (strTable) {
-                case "Check Number" -> column = "checkNum";
-                case "Date" -> column = "date";
-                case "Amount" -> column = "amt";
-                case "Payer" -> column = "payer";
-                case "Memo" -> column = "depositMemo";
-                case "Type" -> column = "depositType";
-            }
+
+
+
+            //firstNameCol.setCellValueFactory(new PropertyValueFactory<Person,String>("firstName"));  Example of how to set tableview column information
+        //*********************************************************************************************************************************************************************************************************
+
         }
 
-        System.out.println(strTable);
-        System.out.println(table);
-        System.out.println(column);
-
+        if (strTable.contains("Check Withdrawal") || strTable.contains("Non-Check Withdrawal")) {
+            column = setColumnWithdrawal(strTable);
+            System.out.println(column);
+        }else if (strTable.contains("Check Deposit") || strTable.contains("Non-Check Deposit")) {
+            column = setColumnDeposit(strTable);
+            System.out.println(column);
+        }
 
         if (strTextField.equals("")) {
             DBHelper db = new DBHelper();
             try {
                 //Statement stmt = db.makeConnection().createStatement();
-                //stmt.executeQuery("select * from " + table + " where ");
+                //ResultSet rs = stmt.executeQuery("select * from " + table + " where " + column + " = "
+                        //+ strTextField);
+                //rs.
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
+        }else {
+            DBHelper db = new DBHelper();
+            try {
+                //Statement stmt = db.makeConnection().createStatement();
+                //ResultSet rs = stmt.executeQuery("select * from " + table + " where " + column + " = "
+                        //+ strTextField);
+                //rs.
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-
-
+ */
     }
 
 
+
+
+
+
+
+
+
+
+
+    private String setTable(String strTable) {
+        String table = null;
+        switch (strTable) {
+            case "Check Withdrawal" -> table = "check_withdrawal";
+            case "Non-Check Withdrawal" -> table = "non_check_withdrawal";
+            case "Check Deposit" -> table = "check_deposit";
+            case "Non-Check Deposit" -> table = "non_check_deposit";
+        }
+        return table;
+    }
+
+    private String setColumnWithdrawal(String strTable) {
+        String column = null;
+        switch (Objects.requireNonNull(strTable)) {
+            case "Check Number" -> column = "checkNum";
+            case "Payee" -> column = "payee";
+            case "Date" -> column = "date";
+            case "Amount" -> column = "amt";
+            case "Type" -> column = "withdrawalType";
+            case "Reason" -> column = "withdrawalReason";
+        }
+        return column;
+    }
+
+    private String setColumnDeposit(String strTable) {
+        String column = null;
+        switch (strTable) {
+            case "Check Number" -> column = "checkNum";
+            case "Date" -> column = "date";
+            case "Amount" -> column = "amt";
+            case "Payer" -> column = "payer";
+            case "Memo" -> column = "depositMemo";
+            case "Type" -> column = "depositType";
+        }
+        return column;
+    }
 
 }
