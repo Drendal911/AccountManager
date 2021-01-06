@@ -13,24 +13,22 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Date;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class DashboardController implements Initializable {
     @FXML Label wTotalLabel, dTotalLabel;
-    @FXML TableView<String> wTableView, dTableView;
-    @FXML TableColumn wNumTypeColumn, wPayeeReasonColumn, wDateColumn, wAmtColumn, dNumTypeColumn, dPayerMemoColumn,
-            dDateColumn, dAmtColumn;
+    @FXML TableView<ListItem> wTableView, dTableView;
+    @FXML TableColumn<ListItem, String> wNumTypeColumn, wPayeeReasonColumn, wDateColumn, dNumTypeColumn,
+            dPayerMemoColumn, dDateColumn;
+    @FXML TableColumn<ListItem, Integer > wAmtColumn, dAmtColumn;
     @FXML ChoiceBox<String> searchColumnChoiceBox, searchTableChoiceBox, addTableItemChoiceBox;
     @FXML Button searchButton, addTransactionButton;
     @FXML RadioButton checkingRadioButton, savingsRadioButton;
@@ -41,12 +39,11 @@ public class DashboardController implements Initializable {
     private ToggleGroup toggleGroup;
     public static String account;
 
-    private class ListItem {
-        String numType, payeeReason;
-        java.sql.Date date;
+    public class ListItem {
+        String numType, payeeReason, date;
         int amt;
 
-        public ListItem(String numType, String payeeReason, java.sql.Date date, int amt) {
+        public ListItem(String numType, String payeeReason, String date, int amt) {
             this.numType = numType;
             this.payeeReason = payeeReason;
             this.date = date;
@@ -64,10 +61,10 @@ public class DashboardController implements Initializable {
         public void setPayeeReason(String payeeReason) {
             this.payeeReason = payeeReason;
         }
-        public java.sql.Date getDate() {
+        public String getDate() {
             return date;
         }
-        public void setDate(java.sql.Date date) {
+        public void setDate(String date) {
             this.date = date;
         }
         public int getAmt() {
@@ -81,15 +78,21 @@ public class DashboardController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        wObservableList.clear();
-        dObservableList.clear();
+        try{
+            wObservableList.clear();
+            dObservableList.clear();
+        }catch (NullPointerException e){
+            System.out.println(e.getMessage());
+        }
+
         //searchColumnChoiceBox.getItems().addAll("Num/Type", "Payee/Reason", "Date", "Amount");
         searchTableChoiceBox.getItems().addAll("Check Withdrawal", "Non-Check Withdrawal", "Check Deposit",
                 "Non-Check Deposit");
         addTableItemChoiceBox.getItems().addAll("Check Withdrawal", "Non-Check Withdrawal", "Check Deposit",
                 "Non-Check Deposit");
+
         getTransactions("withdrawal");
-        getTransactions("deposit");
+        //getTransactions("deposit");
 
         //Set listener for addTableItemChoiceBox and adjusts the available selections for addColumnItemChoiceBox
         searchTableChoiceBox.getSelectionModel().selectedItemProperty().addListener((ObservableValue<?
@@ -110,29 +113,45 @@ public class DashboardController implements Initializable {
     private void getTransactions(String table) {
         DBHelper db = new DBHelper();
         ResultSet rs;
-        if (wObservableList != null) {wObservableList.clear();}
-        if (dObservableList != null) {dObservableList.clear();}
 
         try {
             String query = "select * from check_" + table;
             Statement stmt = db.makeConnection().createStatement();
             rs = stmt.executeQuery(query);
             while (rs.next()) {
+                wObservableList.add(new ListItem(Integer.toString(rs.getInt(7)), rs.getString(8), rs.getDate(6).toString(), rs.getInt(3)));
+                /*
                 String checkNum = rs.getString(7);
                 String payee = rs.getString(8);
-                Date date = rs.getDate(6);
+                String date = rs.getDate(6).toString();
                 int amt = rs.getInt(3);
                 ListItem listItem = new ListItem(checkNum, payee, date, amt);
+
                 if (table.equals("withdrawal")) {wObservableList.add(listItem);
-                }else if (table.equals("deposit")) {dObservableList.add(listItem);
-                }
+                }else if (table.equals("deposit")) {dObservableList.add(listItem);}
+
+                 */
             }
             rs.close();
             stmt.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
+
+            wNumTypeColumn.setCellValueFactory(new PropertyValueFactory<>("numType"));
+            wPayeeReasonColumn.setCellValueFactory(new PropertyValueFactory<>("payeeReason"));
+            wDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+            wAmtColumn.setCellValueFactory(new PropertyValueFactory<>("amt"));
+
+            //wNumTypeColumn, wPayeeReasonColumn, wDateColumn, wAmtColumn, dNumTypeColumn, dPayerMemoColumn, dDateColumn, dAmtColumn;
+            //String numType, String payeeReason, java.sql.Date date, int amt
+            wTableView.setItems(wObservableList);
+
+
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+/*
         try {
             String query = "select * from non_check_" + table;
             Statement stmt = db.makeConnection().createStatement();
@@ -140,7 +159,7 @@ public class DashboardController implements Initializable {
             while (rs.next()) {
                 String wdtype = rs.getString(7);
                 String reason = rs.getString(8);
-                Date date = rs.getDate(6);
+                String date = rs.getDate(6).toString();
                 int amt = rs.getInt(3);
                 ListItem listItem = new ListItem(wdtype, reason, date, amt);
                 if (table.equals("withdrawal")) {wObservableList.add(listItem);
@@ -149,7 +168,11 @@ public class DashboardController implements Initializable {
             rs.close();
             stmt.close();
         } catch (Exception e) {System.out.println(e.getMessage());}
+
+ */
     }
+
+
 
     private void setSearchColumnItemChoiceBox() {
         if (columnChoiceBoxList != null) {
@@ -238,13 +261,13 @@ public class DashboardController implements Initializable {
                     "down menu and click the search button to display a table. Or select a table and column form the " +
                     "drop down menus and enter an enter the column entry into the search text field to search for a " +
                     "specific item.");
-        }else if (!cChoiceBoxEmpty && sTextFieldEmpty){
+        } else if (!cChoiceBoxEmpty && sTextFieldEmpty) {
             DialogBox dialogBox = new DialogBox();
             dialogBox.infoAlertDialog("Missing Information", "Please select a table from the drop " +
                     "down menu and click the search button to display a table. Or select a table and column form the " +
                     "drop down menus and enter an enter the column entry into the search text field to search for a " +
                     "specific item.");
-        }else if (cChoiceBoxEmpty && !sTextFieldEmpty){
+        } else if (cChoiceBoxEmpty && !sTextFieldEmpty) {
             DialogBox dialogBox = new DialogBox();
             dialogBox.infoAlertDialog("Missing Information", "Please select a table from the drop " +
                     "down menu and click the search button to display a table. Or select a table and column form the " +
@@ -309,6 +332,9 @@ public class DashboardController implements Initializable {
                 e.printStackTrace();
             }
         }
+
+        }
+
  */
     }
 
