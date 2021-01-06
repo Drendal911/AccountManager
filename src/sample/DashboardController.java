@@ -2,6 +2,7 @@ package sample;
 
 import DBClasses.DBHelper;
 import Utility.DialogBox;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,10 +19,13 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Objects;
 import java.util.ResourceBundle;
+
+import static sample.LoginController.userID;
 
 public class DashboardController implements Initializable {
     @FXML Label wTotalLabel, dTotalLabel;
@@ -40,10 +44,11 @@ public class DashboardController implements Initializable {
     public static String account;
 
     public class ListItem {
-        String numType, payeeReason, date;
+        String numType, payeeReason;
+        Date date;
         int amt;
 
-        public ListItem(String numType, String payeeReason, String date, int amt) {
+        public ListItem(String numType, String payeeReason, Date date, int amt) {
             this.numType = numType;
             this.payeeReason = payeeReason;
             this.date = date;
@@ -61,10 +66,10 @@ public class DashboardController implements Initializable {
         public void setPayeeReason(String payeeReason) {
             this.payeeReason = payeeReason;
         }
-        public String getDate() {
+        public Date getDate() {
             return date;
         }
-        public void setDate(String date) {
+        public void setDate(Date date) {
             this.date = date;
         }
         public int getAmt() {
@@ -78,30 +83,36 @@ public class DashboardController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        try{
+        toggleGroup = new ToggleGroup();
+        checkingRadioButton.setToggleGroup(toggleGroup);
+        savingsRadioButton.setToggleGroup(toggleGroup);
+        checkingRadioButton.setSelected(true);
+        searchTableChoiceBox.getItems().addAll("Check Withdrawal", "Non-Check Withdrawal", "Check Deposit",
+                "Non-Check Deposit");
+        addTableItemChoiceBox.getItems().addAll("Check Withdrawal", "Non-Check Withdrawal", "Check Deposit",
+                "Non-Check Deposit");
+        //Set listener for addTableItemChoiceBox and adjusts the available selections for addColumnItemChoiceBox
+        searchTableChoiceBox.getSelectionModel().selectedItemProperty().addListener((ObservableValue<?
+                extends String> observable, String oldValue, String newValue) -> setSearchColumnItemChoiceBox() );
+
+        try {
             wObservableList.clear();
             dObservableList.clear();
         }catch (NullPointerException e){
             System.out.println(e.getMessage());
         }
 
-        //searchColumnChoiceBox.getItems().addAll("Num/Type", "Payee/Reason", "Date", "Amount");
-        searchTableChoiceBox.getItems().addAll("Check Withdrawal", "Non-Check Withdrawal", "Check Deposit",
-                "Non-Check Deposit");
-        addTableItemChoiceBox.getItems().addAll("Check Withdrawal", "Non-Check Withdrawal", "Check Deposit",
-                "Non-Check Deposit");
-
         getTransactions("withdrawal");
-        //getTransactions("deposit");
+        getTransactions("deposit");
 
-        //Set listener for addTableItemChoiceBox and adjusts the available selections for addColumnItemChoiceBox
-        searchTableChoiceBox.getSelectionModel().selectedItemProperty().addListener((ObservableValue<?
-                extends String> observable, String oldValue, String newValue) -> setSearchColumnItemChoiceBox() );
-
-        toggleGroup = new ToggleGroup();
-        checkingRadioButton.setToggleGroup(toggleGroup);
-        savingsRadioButton.setToggleGroup(toggleGroup);
-        checkingRadioButton.setSelected(true);
+        toggleGroup.selectedToggleProperty().addListener((ov, old_toggle, new_toggle) -> {
+            wObservableList.clear();
+            dObservableList.clear();
+            getTransactions("withdrawal");
+            getTransactions("deposit");
+            //radioButtonClicked();
+            //***************************************************************************************************************************************************
+        });
     }
 
 
@@ -111,41 +122,39 @@ public class DashboardController implements Initializable {
 
 
     private void getTransactions(String table) {
+        String rButtons = toggleGroup.getSelectedToggle().toString();
+        if (rButtons.contains("Checking")) {account = "checking";}
+        else if (rButtons.contains("Savings")) {account = "savings";}
+
         DBHelper db = new DBHelper();
         ResultSet rs;
-
         try {
-            String query = "select * from check_" + table;
+            String query = "select * from check_" + table + " where userID = " + userID + " and acct = '"
+                    + account + "'";
             Statement stmt = db.makeConnection().createStatement();
             rs = stmt.executeQuery(query);
             while (rs.next()) {
-                wObservableList.add(new ListItem(Integer.toString(rs.getInt(7)), rs.getString(8), rs.getDate(6).toString(), rs.getInt(3)));
-                /*
-                String checkNum = rs.getString(7);
-                String payee = rs.getString(8);
-                String date = rs.getDate(6).toString();
-                int amt = rs.getInt(3);
-                ListItem listItem = new ListItem(checkNum, payee, date, amt);
-
-                if (table.equals("withdrawal")) {wObservableList.add(listItem);
-                }else if (table.equals("deposit")) {dObservableList.add(listItem);}
-
-                 */
+                if (table.equals("withdrawal")) {
+                    wObservableList.add(new ListItem(Integer.toString(rs.getInt(7)), rs.getString
+                            (8), rs.getDate(6), rs.getInt(3)));
+                }else if (table.equals("deposit")) {
+                    dObservableList.add(new ListItem(Integer.toString(rs.getInt(7)), rs.getString
+                            (8), rs.getDate(6), rs.getInt(3)));
+                }
             }
             rs.close();
             stmt.close();
-
 
             wNumTypeColumn.setCellValueFactory(new PropertyValueFactory<>("numType"));
             wPayeeReasonColumn.setCellValueFactory(new PropertyValueFactory<>("payeeReason"));
             wDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
             wAmtColumn.setCellValueFactory(new PropertyValueFactory<>("amt"));
-
-            //wNumTypeColumn, wPayeeReasonColumn, wDateColumn, wAmtColumn, dNumTypeColumn, dPayerMemoColumn, dDateColumn, dAmtColumn;
-            //String numType, String payeeReason, java.sql.Date date, int amt
+            dNumTypeColumn.setCellValueFactory(new PropertyValueFactory<>("numType"));
+            dPayerMemoColumn.setCellValueFactory(new PropertyValueFactory<>("payeeReason"));
+            dDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+            dAmtColumn.setCellValueFactory(new PropertyValueFactory<>("amt"));            
             wTableView.setItems(wObservableList);
-
-
+            dTableView.setItems(dObservableList);            
             rs.close();
             stmt.close();
         } catch (Exception e) {
@@ -171,8 +180,10 @@ public class DashboardController implements Initializable {
 
  */
     }
+    
+    private void radioButtonClicked() {
 
-
+    }
 
     private void setSearchColumnItemChoiceBox() {
         if (columnChoiceBoxList != null) {
