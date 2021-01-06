@@ -45,8 +45,6 @@ public class DashboardController implements Initializable {
 
     public class ListItem {
         String numType, payeeReason, date, amt;
-        //Date date;
-        //int amt;
 
         public ListItem(String numType, String payeeReason, String date, String amt) {
             this.numType = numType;
@@ -176,6 +174,8 @@ public class DashboardController implements Initializable {
         dAmtColumn.setCellValueFactory(new PropertyValueFactory<>("amt"));
         wTableView.setItems(wObservableList);
         dTableView.setItems(dObservableList);
+        wTableView.getSortOrder().add(wDateColumn);
+        dTableView.getSortOrder().add(dDateColumn);
 /*
         try {
             String query = "select * from non_check_" + table;
