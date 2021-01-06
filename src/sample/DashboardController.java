@@ -44,11 +44,11 @@ public class DashboardController implements Initializable {
     public static String account;
 
     public class ListItem {
-        String numType, payeeReason;
-        Date date;
-        int amt;
+        String numType, payeeReason, date, amt;
+        //Date date;
+        //int amt;
 
-        public ListItem(String numType, String payeeReason, Date date, int amt) {
+        public ListItem(String numType, String payeeReason, String date, String amt) {
             this.numType = numType;
             this.payeeReason = payeeReason;
             this.date = date;
@@ -66,16 +66,16 @@ public class DashboardController implements Initializable {
         public void setPayeeReason(String payeeReason) {
             this.payeeReason = payeeReason;
         }
-        public Date getDate() {
+        public String getDate() {
             return date;
         }
-        public void setDate(Date date) {
+        public void setDate(String date) {
             this.date = date;
         }
-        public int getAmt() {
+        public String getAmt() {
             return amt;
         }
-        public void setAmt(int amt) {
+        public void setAmt(String amt) {
             this.amt = amt;
         }
     }
@@ -110,8 +110,6 @@ public class DashboardController implements Initializable {
             dObservableList.clear();
             getTransactions("withdrawal");
             getTransactions("deposit");
-            //radioButtonClicked();
-            //***************************************************************************************************************************************************
         });
     }
 
@@ -136,30 +134,48 @@ public class DashboardController implements Initializable {
             while (rs.next()) {
                 if (table.equals("withdrawal")) {
                     wObservableList.add(new ListItem(Integer.toString(rs.getInt(7)), rs.getString
-                            (8), rs.getDate(6), rs.getInt(3)));
+                            (8), rs.getDate(6).toString(), Integer.toString
+                            (rs.getInt(3))));
                 }else if (table.equals("deposit")) {
                     dObservableList.add(new ListItem(Integer.toString(rs.getInt(7)), rs.getString
-                            (8), rs.getDate(6), rs.getInt(3)));
+                            (8), rs.getDate(6).toString(), Integer.toString
+                            (rs.getInt(3))));
                 }
             }
             rs.close();
             stmt.close();
+        } catch (Exception e) {System.out.println(e.getMessage());}
 
-            wNumTypeColumn.setCellValueFactory(new PropertyValueFactory<>("numType"));
-            wPayeeReasonColumn.setCellValueFactory(new PropertyValueFactory<>("payeeReason"));
-            wDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-            wAmtColumn.setCellValueFactory(new PropertyValueFactory<>("amt"));
-            dNumTypeColumn.setCellValueFactory(new PropertyValueFactory<>("numType"));
-            dPayerMemoColumn.setCellValueFactory(new PropertyValueFactory<>("payeeReason"));
-            dDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-            dAmtColumn.setCellValueFactory(new PropertyValueFactory<>("amt"));            
-            wTableView.setItems(wObservableList);
-            dTableView.setItems(dObservableList);            
+        try {
+            String query = "select * from non_check_" + table + " where userID = " + userID + " and acct = '"
+                    + account + "'";
+            Statement stmt = db.makeConnection().createStatement();
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                if (table.equals("withdrawal")) {
+                    wObservableList.add(new ListItem(rs.getString(7), rs.getString
+                            (8), rs.getDate(6).toString(), Integer.toString
+                            (rs.getInt(3))));
+                }else if (table.equals("deposit")) {
+                    dObservableList.add(new ListItem(rs.getString(7), rs.getString
+                            (8), rs.getDate(6).toString(), Integer.toString
+                            (rs.getInt(3))));
+                }
+            }
             rs.close();
             stmt.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        }catch (Exception e) {System.out.println(e.getMessage());}
+
+        wNumTypeColumn.setCellValueFactory(new PropertyValueFactory<>("numType"));
+        wPayeeReasonColumn.setCellValueFactory(new PropertyValueFactory<>("payeeReason"));
+        wDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        wAmtColumn.setCellValueFactory(new PropertyValueFactory<>("amt"));
+        dNumTypeColumn.setCellValueFactory(new PropertyValueFactory<>("numType"));
+        dPayerMemoColumn.setCellValueFactory(new PropertyValueFactory<>("payeeReason"));
+        dDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        dAmtColumn.setCellValueFactory(new PropertyValueFactory<>("amt"));
+        wTableView.setItems(wObservableList);
+        dTableView.setItems(dObservableList);
 /*
         try {
             String query = "select * from non_check_" + table;
@@ -179,10 +195,6 @@ public class DashboardController implements Initializable {
         } catch (Exception e) {System.out.println(e.getMessage());}
 
  */
-    }
-    
-    private void radioButtonClicked() {
-
     }
 
     private void setSearchColumnItemChoiceBox() {
