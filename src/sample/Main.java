@@ -24,7 +24,7 @@ public class Main extends Application {
     public static void main(String[] args) throws SQLException {
         launch(args);
         DBHelper db = new DBHelper();
-        //db.loadDriver();
+        db.loadDriver();
     }
 }
 

@@ -21,6 +21,7 @@ import java.sql.SQLException;
 public class LoginController {
     @FXML TextField userNameTextField;
     @FXML PasswordField passwordField;
+    public static int userID;
 
     @FXML private void setLoginButton(ActionEvent e) {
         DBHelper db = new DBHelper();
@@ -36,10 +37,10 @@ public class LoginController {
             ResultSet resultSet = pStmt.executeQuery();
             resultSet.first();
             String pw = resultSet.getString("Password");
+            userID = resultSet.getInt("userID");
             pStmt.close();
             resultSet.close();
-            con.close();
-            db.closeConnection();
+            pStmt.close();
 
             if (password.equals(pw)) {
                 Parent sceneViewParent = FXMLLoader.load(getClass().getResource("dashboard.fxml"));
@@ -48,13 +49,9 @@ public class LoginController {
                 window.setScene(sceneViewScene);
                 window.show();
                 sceneViewParent.requestFocus();
-                con.close();
-                db.closeConnection();
             }else {
                 dialogBox.infoAlertDialog("Password Incorrect",
                         "The password you entered is incorrect. Please check the password and try again");
-                con.close();
-                db.closeConnection();
             }
         }catch (SQLException ex) {
             dialogBox.infoAlertDialog("USER NOT FOUND", "Please check the 'Username' field, " +

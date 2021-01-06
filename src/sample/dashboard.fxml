@@ -37,12 +37,12 @@
                         <Font name="System Bold" size="24.0" />
                      </font>
                   </Label>
-                  <RadioButton fx:id="checkingRadioButton" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="27.0" prefWidth="112.0" text="Checking">
+                  <RadioButton fx:id="checkingRadioButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#setToggleGroup" prefHeight="27.0" prefWidth="112.0" text="Checking">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </RadioButton>
-                  <RadioButton fx:id="savingsRadioButton" contentDisplay="CENTER" layoutX="10.0" layoutY="27.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="112.0" text="Savings">
+                  <RadioButton fx:id="savingsRadioButton" contentDisplay="CENTER" layoutX="10.0" layoutY="27.0" mnemonicParsing="false" onAction="#setToggleGroup" prefHeight="27.0" prefWidth="112.0" text="Savings">
                      <font>
                         <Font size="18.0" />
                      </font>

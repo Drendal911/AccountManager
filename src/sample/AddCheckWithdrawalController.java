@@ -12,9 +12,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class AddCheckWithdrawalController {
-    @FXML
-    Button cancelAddCheckWithdrawalButton;
-
+    @FXML Button cancelAddCheckWithdrawalButton;
 
     public void setCancelAddCheckWithdrawalButton(ActionEvent ev) {
         Parent sceneViewParent = null;

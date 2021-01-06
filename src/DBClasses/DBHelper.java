@@ -32,18 +32,19 @@ public class DBHelper {
     //Connects to the database
     public Connection makeConnection() throws ClassNotFoundException, SQLException, Exception {
         dbConnect = DriverManager.getConnection(DB_URL, username, password);
-        System.out.println("Connection Successful!");
         return dbConnect;
     }
-
+/*
     //Closes a connection to the database
     public void closeConnection() throws ClassNotFoundException, SQLException, Exception {
         dbConnect.close();
         System.out.println("Connection Closed.");
     }
 
+ */
+
     public Integer numOfColumns(String table) throws SQLException {
-        //dbConnect = DriverManager.getConnection(DB_URL, username, password);
+        dbConnect = DriverManager.getConnection(DB_URL, username, password);
         Statement stmt = dbConnect.createStatement();
         //Code to get the number of columns in a table
         ResultSet resultSet = stmt.executeQuery("SELECT * FROM " + table + " where 1=2;");
@@ -53,6 +54,22 @@ public class DBHelper {
         dbConnect.close();
         return rsmd.getColumnCount();
     }
+/*
+    public Integer numOfRows(String table) throws SQLException {
+        dbConnect = DriverManager.getConnection(DB_URL, username, password);
+        Statement stmt = dbConnect.createStatement();
+        //Code to get the number of columns in a table
+        ResultSet resultSet = stmt.executeQuery("SELECT * FROM " + table);
+        resultSet.last();
+        int size = resultSet.getRow();
+        resultSet.beforeFirst();
+        resultSet.close();
+        stmt.close();
+        dbConnect.close();
+        return size;
+    }
+
+ */
 
 }
 

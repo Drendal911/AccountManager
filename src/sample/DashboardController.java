@@ -13,6 +13,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -21,6 +23,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class DashboardController implements Initializable {
@@ -31,9 +34,12 @@ public class DashboardController implements Initializable {
     @FXML ChoiceBox<String> searchColumnChoiceBox, searchTableChoiceBox, addTableItemChoiceBox;
     @FXML Button searchButton, addTransactionButton;
     @FXML RadioButton checkingRadioButton, savingsRadioButton;
+    @FXML TextField searchTextField;
     private ObservableList<ListItem> wObservableList = FXCollections.observableArrayList();
     private ObservableList<ListItem> dObservableList = FXCollections.observableArrayList();
     private ObservableList<String> columnChoiceBoxList = FXCollections.observableArrayList();
+    private ToggleGroup toggleGroup;
+    public static String account;
 
     private class ListItem {
         String numType, payeeReason;
@@ -88,6 +94,11 @@ public class DashboardController implements Initializable {
         //Set listener for addTableItemChoiceBox and adjusts the available selections for addColumnItemChoiceBox
         searchTableChoiceBox.getSelectionModel().selectedItemProperty().addListener((ObservableValue<?
                 extends String> observable, String oldValue, String newValue) -> setSearchColumnItemChoiceBox() );
+
+        toggleGroup = new ToggleGroup();
+        checkingRadioButton.setToggleGroup(toggleGroup);
+        savingsRadioButton.setToggleGroup(toggleGroup);
+        checkingRadioButton.setSelected(true);
     }
 
 
@@ -112,15 +123,12 @@ public class DashboardController implements Initializable {
                 Date date = rs.getDate(6);
                 int amt = rs.getInt(3);
                 ListItem listItem = new ListItem(checkNum, payee, date, amt);
-                if (table.equals("withdrawal")) {
-                    wObservableList.add(listItem);
-                }else if (table.equals("deposit")) {
-                    dObservableList.add(listItem);
+                if (table.equals("withdrawal")) {wObservableList.add(listItem);
+                }else if (table.equals("deposit")) {dObservableList.add(listItem);
                 }
             }
             rs.close();
             stmt.close();
-            db.closeConnection();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -135,20 +143,13 @@ public class DashboardController implements Initializable {
                 Date date = rs.getDate(6);
                 int amt = rs.getInt(3);
                 ListItem listItem = new ListItem(wdtype, reason, date, amt);
-                if (table.equals("withdrawal")) {
-                    wObservableList.add(listItem);
-                }else if (table.equals("deposit")) {
-                    dObservableList.add(listItem);
-                }
+                if (table.equals("withdrawal")) {wObservableList.add(listItem);
+                }else if (table.equals("deposit")) {dObservableList.add(listItem);}
             }
             rs.close();
             stmt.close();
-            db.closeConnection();
-        }catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        }catch (SQLException | ClassNotFoundException e) {e.printStackTrace();
+        }catch (Exception e) {e.printStackTrace();}
     }
 
     private void setSearchColumnItemChoiceBox() {
@@ -212,16 +213,78 @@ public class DashboardController implements Initializable {
         }
     }
 
+    public void setToggleGroup(ActionEvent e) {
+        toggleGroup.setUserData(toggleGroup.getSelectedToggle().toString());
+        String string = toggleGroup.getUserData().toString();
+        if (string.contains("Savings")) {
+            account = "Savings";
+        }else if (string.contains("Checking")) {
+            account = "Checking";
+        }
+    }
+
     public void setSearchButton() {
+        //String table;
+        String column;
         String strTable = searchTableChoiceBox.getSelectionModel().getSelectedItem();
-        String strColumn = searchTableChoiceBox.getSelectionModel().getSelectedItem();
-        if (strTable.equals("") || strColumn.equals("")) {
+        String strColumn = searchColumnChoiceBox.getSelectionModel().getSelectedItem();
+        String strTextField = searchTextField.getText();
+
+        if (strTable == null || strColumn == null) {
             DialogBox dialogBox = new DialogBox();
             dialogBox.infoAlertDialog("Missing Information", "Please select both a table and " +
                     "column to search for.");
-        }else {
-            //******************************************************************************************************************************************************************************************************************
         }
+
+        assert strTable != null;
+        String table = switch (strTable) {
+            case "Check Withdrawal" -> table = "check_withdrawal";
+            case "Non-Check Withdrawal" -> table = "non_check_withdrawal";
+            case "Check Deposit" -> table = "check_deposit";
+            case "Non-Check Deposit" -> table = "non_check_deposit";
+            default -> throw new IllegalStateException("Unexpected value: " + strTable);
+        };
+
+        if (strTable.contains("Check Withdrawal") || strTable.contains("Non-Check Withdrawal")){
+            switch (Objects.requireNonNull(strColumn)) {
+                case "Check Number" -> column = "checkNum";
+                case "Payee" -> column = "payee";
+                case "Date" -> column = "date";
+                case "Amount" -> column = "amt";
+                case "Type" -> column = "withdrawalType";
+                case "Reason" -> column = "withdrawalReason";
+            }
+        }
+        if (strTable.contains("Check Deposit") || strTable.contains("Non-Check Deposit")) {
+            switch (strTable) {
+                case "Check Number" -> column = "checkNum";
+                case "Date" -> column = "date";
+                case "Amount" -> column = "amt";
+                case "Payer" -> column = "payer";
+                case "Memo" -> column = "depositMemo";
+                case "Type" -> column = "depositType";
+            }
+        }
+
+        System.out.println(strTable);
+        System.out.println(table);
+        System.out.println(column);
+
+
+        if (strTextField.equals("")) {
+            DBHelper db = new DBHelper();
+            try {
+                //Statement stmt = db.makeConnection().createStatement();
+                //stmt.executeQuery("select * from " + table + " where ");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+
     }
+
+
 
 }
