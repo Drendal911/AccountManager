@@ -40,7 +40,6 @@ public class LoginController {
             userID = resultSet.getInt("userID");
             pStmt.close();
             resultSet.close();
-            pStmt.close();
 
             if (password.equals(pw)) {
                 Parent sceneViewParent = FXMLLoader.load(getClass().getResource("dashboard.fxml"));

@@ -8,7 +8,7 @@ public class DBHelper {
             "?autoReconnect=true&useSSL=false";
     private static final String username = "acctmgr";
     private static final String password = "acctmgr_password";
-    private static final String driver = "com.mysql.jdbc.Driver";
+    //private static final String driver = "com.mysql.jdbc.Driver";
     Connection dbConnect;
 
     public DBHelper() {
@@ -19,7 +19,7 @@ public class DBHelper {
     ********************************************************************************************************************
     *******************************************************************************************************************/
 
-
+/*
     public void loadDriver() {
         try {
             //load the jdbc driver
@@ -29,19 +29,13 @@ public class DBHelper {
         }
     }
 
+ */
+
     //Connects to the database
     public Connection makeConnection() throws ClassNotFoundException, SQLException, Exception {
         dbConnect = DriverManager.getConnection(DB_URL, username, password);
         return dbConnect;
     }
-/*
-    //Closes a connection to the database
-    public void closeConnection() throws ClassNotFoundException, SQLException, Exception {
-        dbConnect.close();
-        System.out.println("Connection Closed.");
-    }
-
- */
 
     public Integer numOfColumns(String table) throws SQLException {
         dbConnect = DriverManager.getConnection(DB_URL, username, password);

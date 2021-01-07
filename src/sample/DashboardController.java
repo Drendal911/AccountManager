@@ -127,12 +127,12 @@ public class DashboardController implements Initializable {
             rs = stmt.executeQuery(query);
             while (rs.next()) {
                 if (table.equals("withdrawal")) {
-                    wObservableList.add(new ListItem(Integer.toString(rs.getInt(7)), rs.getString
-                            (8), rs.getDate(6).toString(), Integer.toString
+                    wObservableList.add(new ListItem(Integer.toString(rs.getInt(6)), rs.getString
+                            (7), rs.getDate(5).toString(), Integer.toString
                             (rs.getInt(3))));
                 }else if (table.equals("deposit")) {
-                    dObservableList.add(new ListItem(Integer.toString(rs.getInt(7)), rs.getString
-                            (8), rs.getDate(6).toString(), Integer.toString
+                    dObservableList.add(new ListItem(Integer.toString(rs.getInt(6)), rs.getString
+                            (7), rs.getDate(5).toString(), Integer.toString
                             (rs.getInt(3))));
                 }
             }
@@ -147,12 +147,12 @@ public class DashboardController implements Initializable {
             rs = stmt.executeQuery(query);
             while (rs.next()) {
                 if (table.equals("withdrawal")) {
-                    wObservableList.add(new ListItem(rs.getString(7), rs.getString
-                            (8), rs.getDate(6).toString(), Integer.toString
+                    wObservableList.add(new ListItem(rs.getString(6), rs.getString
+                            (7), rs.getDate(5).toString(), Integer.toString
                             (rs.getInt(3))));
                 }else if (table.equals("deposit")) {
-                    dObservableList.add(new ListItem(rs.getString(7), rs.getString
-                            (8), rs.getDate(6).toString(), Integer.toString
+                    dObservableList.add(new ListItem(rs.getString(6), rs.getString
+                            (7), rs.getDate(5).toString(), Integer.toString
                             (rs.getInt(3))));
                 }
             }
@@ -292,7 +292,7 @@ public class DashboardController implements Initializable {
             DBHelper db = new DBHelper();
             try {
                 Statement stmt = db.makeConnection().createStatement();
-                ResultSet rs = stmt.executeQuery("select * from " + table);
+                ResultSet rs = stmt.executeQuery("select * from " + table + " where userID = " + userID);
                 while (rs.next()) {
                     String checkNum = rs.getString(7);
                     String payee = rs.getString(8);
@@ -307,7 +307,7 @@ public class DashboardController implements Initializable {
                 }
                 rs.close();
                 stmt.close();
-            } catch (Exception e) {
+            }catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         }
@@ -320,17 +320,24 @@ public class DashboardController implements Initializable {
             String query;
             if (strTable.contains("Withdrawal")) {
                 column = setColumnWithdrawal(strColumn);
-                query = "select * from " + table + " where " + column + " = ?";
+                query = "select * from " + table + " where " + column + " = ? and userID = " + userID;
                 try {
                     PreparedStatement pstmt = db.makeConnection().prepareStatement(query);
                     pstmt.setString(1, strTextField);
                     ResultSet rs = pstmt.executeQuery();
-                    while (rs.next()) {
-                        String checkNum = rs.getString(7);
-                        String payee = rs.getString(8);
-                        String date = rs.getDate(6).toString();
-                        String amt = Integer.toString(rs.getInt(3));
-                        wObservableList.add(new ListItem(checkNum, payee, date, amt));
+                    if (!rs.next()) {
+                        DialogBox dialogBox = new DialogBox();
+                        dialogBox.infoAlertDialog("None Found", "No matching entries were found in " +
+                                "the database.");
+                    }else {
+                        rs.beforeFirst();
+                        while (rs.next()) {
+                            String checkNum = rs.getString(7);
+                            String payee = rs.getString(8);
+                            String date = rs.getDate(6).toString();
+                            String amt = Integer.toString(rs.getInt(3));
+                            wObservableList.add(new ListItem(checkNum, payee, date, amt));
+                        }
                     }
                     rs.close();
                     pstmt.close();
@@ -339,17 +346,24 @@ public class DashboardController implements Initializable {
                 }
             }else if (strTable.contains("Deposit")) {
                 column = setColumnDeposit(strColumn);
-                query = "select * from " + table + " where " + column + " = ?";
+                query = "select * from " + table + " where " + column + " = ? and userID = " + userID;
                 try {
                     PreparedStatement pstmt = db.makeConnection().prepareStatement(query);
                     pstmt.setString(1, strTextField);
                     ResultSet rs = pstmt.executeQuery();
-                    while (rs.next()) {
-                        String checkNum = rs.getString(7);
-                        String payee = rs.getString(8);
-                        String date = rs.getDate(6).toString();
-                        String amt = Integer.toString(rs.getInt(3));
-                        dObservableList.add(new ListItem(checkNum, payee, date, amt));
+                    if (!rs.next()) {
+                        DialogBox dialogBox = new DialogBox();
+                        dialogBox.infoAlertDialog("None Found", "No matching entries were found in " +
+                                "the database.");
+                    }else {
+                        rs.beforeFirst();
+                        while (rs.next()) {
+                            String checkNum = rs.getString(7);
+                            String payee = rs.getString(8);
+                            String date = rs.getDate(6).toString();
+                            String amt = Integer.toString(rs.getInt(3));
+                            dObservableList.add(new ListItem(checkNum, payee, date, amt));
+                        }
                     }
                     rs.close();
                     pstmt.close();
