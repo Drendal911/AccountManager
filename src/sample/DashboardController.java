@@ -19,9 +19,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -96,9 +94,7 @@ public class DashboardController implements Initializable {
         try {
             wObservableList.clear();
             dObservableList.clear();
-        }catch (NullPointerException e){
-            System.out.println(e.getMessage());
-        }
+        }catch (NullPointerException e) {System.out.println(e.getMessage());}
 
         getTransactions("withdrawal");
         getTransactions("deposit");
@@ -172,29 +168,20 @@ public class DashboardController implements Initializable {
         dPayerMemoColumn.setCellValueFactory(new PropertyValueFactory<>("payeeReason"));
         dDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         dAmtColumn.setCellValueFactory(new PropertyValueFactory<>("amt"));
+
+        wNumTypeColumn.setStyle( "-fx-alignment: CENTER;");
+        wPayeeReasonColumn.setStyle( "-fx-alignment: CENTER;");
+        wDateColumn.setStyle( "-fx-alignment: CENTER;");
+        wAmtColumn.setStyle( "-fx-alignment: CENTER;");
+        dNumTypeColumn.setStyle( "-fx-alignment: CENTER;");
+        dPayerMemoColumn.setStyle( "-fx-alignment: CENTER;");
+        dDateColumn.setStyle( "-fx-alignment: CENTER;");
+        dAmtColumn.setStyle( "-fx-alignment: CENTER;");
+
         wTableView.setItems(wObservableList);
         dTableView.setItems(dObservableList);
         wTableView.getSortOrder().add(wDateColumn);
         dTableView.getSortOrder().add(dDateColumn);
-/*
-        try {
-            String query = "select * from non_check_" + table;
-            Statement stmt = db.makeConnection().createStatement();
-            rs = stmt.executeQuery(query);
-            while (rs.next()) {
-                String wdtype = rs.getString(7);
-                String reason = rs.getString(8);
-                String date = rs.getDate(6).toString();
-                int amt = rs.getInt(3);
-                ListItem listItem = new ListItem(wdtype, reason, date, amt);
-                if (table.equals("withdrawal")) {wObservableList.add(listItem);
-                }else if (table.equals("deposit")) {dObservableList.add(listItem);}
-            }
-            rs.close();
-            stmt.close();
-        } catch (Exception e) {System.out.println(e.getMessage());}
-
- */
     }
 
     private void setSearchColumnItemChoiceBox() {
@@ -297,77 +284,72 @@ public class DashboardController implements Initializable {
                     "drop down menus and enter an enter the column entry into the search text field to search for a " +
                     "specific item.");
         }
-/*
+
         if (!tChoiceBoxEmpty && cChoiceBoxEmpty && sTextFieldEmpty) {
+            wObservableList.clear();
+            dObservableList.clear();
             table = setTable(strTable);
             DBHelper db = new DBHelper();
-            ObservableList<ListItem> searchObservableList = FXCollections.observableArrayList();
             try {
                 Statement stmt = db.makeConnection().createStatement();
                 ResultSet rs = stmt.executeQuery("select * from " + table);
                 while (rs.next()) {
                     String checkNum = rs.getString(7);
                     String payee = rs.getString(8);
-                    Date date = rs.getDate(6);
-                    int amt = rs.getInt(3);
-                    ListItem listItem = new ListItem(checkNum, payee, date, amt);
-                    searchObservableList.add(listItem);
+                    String date = rs.getDate(6).toString();
+                    String amt = Integer.toString(rs.getInt(3));
+                    switch (table) {
+                        case "check_withdrawal", "non_check_withdrawal" -> wObservableList.add(new ListItem
+                                (checkNum, payee, date, amt));
+                        case "check_deposit", "non_check_deposit" -> dObservableList.add(new ListItem
+                                (checkNum, payee, date, amt));
+                    }
                 }
                 rs.close();
                 stmt.close();
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-
-
-
-            //firstNameCol.setCellValueFactory(new PropertyValueFactory<Person,String>("firstName"));  Example of how to set tableview column information
-        //*********************************************************************************************************************************************************************************************************
-
         }
 
-        if (strTable.contains("Check Withdrawal") || strTable.contains("Non-Check Withdrawal")) {
-            column = setColumnWithdrawal(strTable);
-            System.out.println(column);
-        }else if (strTable.contains("Check Deposit") || strTable.contains("Non-Check Deposit")) {
-            column = setColumnDeposit(strTable);
-            System.out.println(column);
-        }
-
-        if (strTextField.equals("")) {
+        if (!tChoiceBoxEmpty && !cChoiceBoxEmpty && !sTextFieldEmpty) {
+            wObservableList.clear();
+            dObservableList.clear();
+            table = setTable(strTable);
             DBHelper db = new DBHelper();
-            try {
-                //Statement stmt = db.makeConnection().createStatement();
-                //ResultSet rs = stmt.executeQuery("select * from " + table + " where " + column + " = "
-                        //+ strTextField);
-                //rs.
-            } catch (Exception e) {
-                e.printStackTrace();
+            String query;
+            if (strTable.contains("Withdrawal")) {
+                column = setColumnWithdrawal(strColumn);
+                query = "select * from ? where ? = ?";
+
+                System.out.println(table + " " + column + " " + strTextField);
+                //LEFT OFF HERE. ERROR IN SQL STMT ****************************************************************************************************************************************************************************************
+
+                try {
+                    PreparedStatement pstmt = db.makeConnection().prepareStatement(query);
+                    pstmt.setString(1, table);
+                    pstmt.setString(2, column);
+                    pstmt.setString(3, strTextField);
+                    ResultSet rs = pstmt.executeQuery();
+                    while (rs.next()) {
+                        String checkNum = rs.getString(7);
+                        String payee = rs.getString(8);
+                        String date = rs.getDate(6).toString();
+                        String amt = Integer.toString(rs.getInt(3));
+                        wObservableList.add(new ListItem(checkNum, payee, date, amt));
+                    }
+                    rs.close();
+                    pstmt.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
-        }else {
-            DBHelper db = new DBHelper();
-            try {
-                //Statement stmt = db.makeConnection().createStatement();
-                //ResultSet rs = stmt.executeQuery("select * from " + table + " where " + column + " = "
-                        //+ strTextField);
-                //rs.
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+
 
         }
 
- */
     }
-
-
-
-
-
-
-
-
 
 
 
@@ -382,9 +364,9 @@ public class DashboardController implements Initializable {
         return table;
     }
 
-    private String setColumnWithdrawal(String strTable) {
+    private String setColumnWithdrawal(String strColumn) {
         String column = null;
-        switch (Objects.requireNonNull(strTable)) {
+        switch (strColumn) {
             case "Check Number" -> column = "checkNum";
             case "Payee" -> column = "payee";
             case "Date" -> column = "date";
@@ -395,9 +377,9 @@ public class DashboardController implements Initializable {
         return column;
     }
 
-    private String setColumnDeposit(String strTable) {
+    private String setColumnDeposit(String strColumn) {
         String column = null;
-        switch (strTable) {
+        switch (strColumn) {
             case "Check Number" -> column = "checkNum";
             case "Date" -> column = "date";
             case "Amount" -> column = "amt";
