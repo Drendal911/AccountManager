@@ -2,7 +2,6 @@ package sample;
 
 import DBClasses.DBHelper;
 import Utility.DialogBox;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,8 +18,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.sql.*;
-import java.util.Objects;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ResourceBundle;
 
 import static sample.LoginController.userID;
@@ -32,7 +32,7 @@ public class DashboardController implements Initializable {
             dPayerMemoColumn, dDateColumn;
     @FXML TableColumn<ListItem, Integer > wAmtColumn, dAmtColumn;
     @FXML ChoiceBox<String> searchColumnChoiceBox, searchTableChoiceBox, addTableItemChoiceBox;
-    @FXML Button searchButton, addTransactionButton;
+    @FXML Button searchButton, addTransactionButton, defaultButton;
     @FXML RadioButton checkingRadioButton, savingsRadioButton;
     @FXML TextField searchTextField;
     private ObservableList<ListItem> wObservableList = FXCollections.observableArrayList();
@@ -245,7 +245,7 @@ public class DashboardController implements Initializable {
         }
     }
 
-    public void setToggleGroup(ActionEvent e) {
+    public void setToggleGroup() {
         toggleGroup.setUserData(toggleGroup.getSelectedToggle().toString());
         String string = toggleGroup.getUserData().toString();
         if (string.contains("Savings")) {
@@ -361,7 +361,17 @@ public class DashboardController implements Initializable {
 
     }
 
-
+    public void setDefaultButton() {
+        checkingRadioButton.setSelected(true);
+        searchColumnChoiceBox.setValue("");
+        searchTableChoiceBox.setValue("");
+        addTableItemChoiceBox.setValue("");
+        searchTextField.setText("");
+        wObservableList.clear();
+        dObservableList.clear();
+        getTransactions("withdrawal");
+        getTransactions("deposit");
+    }
 
     private String setTable(String strTable) {
         String table = null;

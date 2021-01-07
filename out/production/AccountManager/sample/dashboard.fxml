@@ -63,6 +63,7 @@
                   </Label>
                </children>
             </VBox>
+            <Button fx:id="defaultButton" layoutX="35.0" layoutY="642.0" mnemonicParsing="false" onAction="#setDefaultButton" text="Default Tables" />
          </children>
       </AnchorPane>
       <AnchorPane layoutX="508.0" layoutY="108.0" prefHeight="671.0" prefWidth="469.0">
