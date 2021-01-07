@@ -320,16 +320,10 @@ public class DashboardController implements Initializable {
             String query;
             if (strTable.contains("Withdrawal")) {
                 column = setColumnWithdrawal(strColumn);
-                query = "select * from ? where ? = ?";
-
-                System.out.println(table + " " + column + " " + strTextField);
-                //LEFT OFF HERE. ERROR IN SQL STMT ****************************************************************************************************************************************************************************************
-
+                query = "select * from " + table + " where " + column + " = ?";
                 try {
                     PreparedStatement pstmt = db.makeConnection().prepareStatement(query);
-                    pstmt.setString(1, table);
-                    pstmt.setString(2, column);
-                    pstmt.setString(3, strTextField);
+                    pstmt.setString(1, strTextField);
                     ResultSet rs = pstmt.executeQuery();
                     while (rs.next()) {
                         String checkNum = rs.getString(7);
@@ -343,10 +337,26 @@ public class DashboardController implements Initializable {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
+            }else if (strTable.contains("Deposit")) {
+                column = setColumnDeposit(strColumn);
+                query = "select * from " + table + " where " + column + " = ?";
+                try {
+                    PreparedStatement pstmt = db.makeConnection().prepareStatement(query);
+                    pstmt.setString(1, strTextField);
+                    ResultSet rs = pstmt.executeQuery();
+                    while (rs.next()) {
+                        String checkNum = rs.getString(7);
+                        String payee = rs.getString(8);
+                        String date = rs.getDate(6).toString();
+                        String amt = Integer.toString(rs.getInt(3));
+                        dObservableList.add(new ListItem(checkNum, payee, date, amt));
+                    }
+                    rs.close();
+                    pstmt.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-
-
         }
 
     }
