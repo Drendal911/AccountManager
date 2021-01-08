@@ -23,14 +23,10 @@ import java.util.ResourceBundle;
 import static sample.LoginController.userID;
 
 public class AddCheckWithdrawalController implements Initializable {
-    @FXML
-    Button cancelAddCheckWithdrawalButton, cwAddButton;
-    @FXML
-    TextField cwAmt, cwPayee, cwCheckNum;
-    @FXML
-    ComboBox<String> cwAcct;
-    @FXML
-    DatePicker cwDate;
+    @FXML Button cancelAddCheckWithdrawalButton, cwAddButton;
+    @FXML TextField cwAmt, cwPayee, cwCheckNum;
+    @FXML ComboBox<String> cwAcct;
+    @FXML DatePicker cwDate;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -82,7 +78,6 @@ public class AddCheckWithdrawalController implements Initializable {
                     ResultSet rs = stmt.executeQuery(totalQuery);
                     rs.last();
                     total = rs.getBigDecimal("total");
-                    System.out.println(total); //************************************************************************************************************************************
                     rs.close();
                     stmt.close();
                 } catch (Exception e) {
@@ -131,14 +126,6 @@ public class AddCheckWithdrawalController implements Initializable {
                     pStmt.executeUpdate();
                     rs.close();
                     pStmt.close();
-
-                    System.out.println(acct);
-                    System.out.println(total);
-                    System.out.println("MINUS"); //****************************************************************************************************************************
-                    System.out.println(amount);
-                    System.out.println("EQUALS");
-                    System.out.println(bdTotal);
-
 
                     DialogBox dialogBox = new DialogBox();
                     dialogBox.infoAlertDialog("Transaction Successful", "Your transaction has been saved " +
