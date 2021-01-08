@@ -36,7 +36,6 @@ public class AddNonCheckWithdrawalController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         ncwAcct.getItems().addAll("Checking", "Savings");
-
     }
 
 

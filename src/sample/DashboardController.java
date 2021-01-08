@@ -334,7 +334,7 @@ public class DashboardController implements Initializable {
                         while (rs.next()) {
                             String checkNum = rs.getString(7);
                             String payee = rs.getString(8);
-                            String date = rs.getDate(6).toString();
+                            String date = rs.getDate(5).toString();
                             String amt = Integer.toString(rs.getInt(3));
                             wObservableList.add(new ListItem(checkNum, payee, date, amt));
                         }
@@ -360,7 +360,7 @@ public class DashboardController implements Initializable {
                         while (rs.next()) {
                             String checkNum = rs.getString(7);
                             String payee = rs.getString(8);
-                            String date = rs.getDate(6).toString();
+                            String date = rs.getDate(5).toString();
                             String amt = Integer.toString(rs.getInt(3));
                             dObservableList.add(new ListItem(checkNum, payee, date, amt));
                         }
