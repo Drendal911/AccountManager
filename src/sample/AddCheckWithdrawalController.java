@@ -86,7 +86,7 @@ public class AddCheckWithdrawalController implements Initializable {
                 try {
                     PreparedStatement pStmt = db.makeConnection().prepareStatement(query);
                     pStmt.setInt(1, userID);
-                    pStmt.setString(2, cwAmt.getText());
+                    pStmt.setString(2, amount);
                     pStmt.setBigDecimal(3, total);
                     pStmt.setString(4, date);
                     pStmt.setString(5, checkNum);
