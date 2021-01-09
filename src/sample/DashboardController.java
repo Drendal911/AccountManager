@@ -26,7 +26,7 @@ import java.util.ResourceBundle;
 import static sample.LoginController.userID;
 
 public class DashboardController implements Initializable {
-    @FXML Label wTotalLabel, dTotalLabel;
+    @FXML Label wTotalLabel, dTotalLabel, abTotalLabel, nTotalLabel, acctBalanceLabel;
     @FXML TableView<ListItem> wTableView, dTableView;
     @FXML TableColumn<ListItem, String> wNumTypeColumn, wPayeeReasonColumn, wDateColumn, dNumTypeColumn,
             dPayerMemoColumn, dDateColumn;
@@ -40,6 +40,9 @@ public class DashboardController implements Initializable {
     private ObservableList<String> columnChoiceBoxList = FXCollections.observableArrayList();
     private ToggleGroup toggleGroup;
     public static String account;
+    double wTotal = 0.00;
+    double dTotal = 0.00;
+    double nTotal;
 
     public class ListItem {
         String numType, payeeReason, date, amt;
@@ -79,31 +82,22 @@ public class DashboardController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        toggleGroup = new ToggleGroup();
-        checkingRadioButton.setToggleGroup(toggleGroup);
-        savingsRadioButton.setToggleGroup(toggleGroup);
-        checkingRadioButton.setSelected(true);
-        searchTableChoiceBox.getItems().addAll("Check Withdrawal", "Non-Check Withdrawal", "Check Deposit",
-                "Non-Check Deposit");
-        addTableItemChoiceBox.getItems().addAll("Check Withdrawal", "Non-Check Withdrawal", "Check Deposit",
-                "Non-Check Deposit");
-        //Set listener for addTableItemChoiceBox and adjusts the available selections for addColumnItemChoiceBox
-        searchTableChoiceBox.getSelectionModel().selectedItemProperty().addListener((ObservableValue<?
-                extends String> observable, String oldValue, String newValue) -> setSearchColumnItemChoiceBox() );
-
-        try {
-            wObservableList.clear();
-            dObservableList.clear();
-        }catch (NullPointerException e) {System.out.println(e.getMessage());}
-
+        initialSetup();
+        clearObservableLists();
+        getAccount();
+        setAccountLabel();
         getTransactions("withdrawal");
         getTransactions("deposit");
 
+        nTotal = dTotal - wTotal;
+        nTotalLabel.setText("$" + nTotal);
+
+        //Set listener for addTableItemChoiceBox and adjusts the available selections for addColumnItemChoiceBox
+        searchTableChoiceBox.getSelectionModel().selectedItemProperty().addListener((ObservableValue<?
+                extends String> observable, String oldValue, String newValue) -> setSearchColumnItemChoiceBox() );
+        //Set listener for togglegroup, adjusts observable lists according to the item selected
         toggleGroup.selectedToggleProperty().addListener((ov, old_toggle, new_toggle) -> {
-            wObservableList.clear();
-            dObservableList.clear();
-            getTransactions("withdrawal");
-            getTransactions("deposit");
+            setToggleGroup();
         });
     }
 
@@ -114,74 +108,9 @@ public class DashboardController implements Initializable {
 
 
     private void getTransactions(String table) {
-        String rButtons = toggleGroup.getSelectedToggle().toString();
-        if (rButtons.contains("Checking")) {account = "checking";}
-        else if (rButtons.contains("Savings")) {account = "savings";}
-
-        DBHelper db = new DBHelper();
-        ResultSet rs;
-        try {
-            String query = "select * from check_" + table + " where userID = " + userID + " and acct = '"
-                    + account + "'";
-            Statement stmt = db.makeConnection().createStatement();
-            rs = stmt.executeQuery(query);
-            while (rs.next()) {
-                if (table.equals("withdrawal")) {
-                    wObservableList.add(new ListItem(Integer.toString(rs.getInt(6)), rs.getString
-                            (7), rs.getDate(5).toString(), Integer.toString
-                            (rs.getInt(3))));
-                }else if (table.equals("deposit")) {
-                    dObservableList.add(new ListItem(Integer.toString(rs.getInt(6)), rs.getString
-                            (7), rs.getDate(5).toString(), Integer.toString
-                            (rs.getInt(3))));
-                }
-            }
-            rs.close();
-            stmt.close();
-        } catch (Exception e) {System.out.println(e.getMessage());}
-
-        try {
-            String query = "select * from non_check_" + table + " where userID = " + userID + " and acct = '"
-                    + account + "'";
-            Statement stmt = db.makeConnection().createStatement();
-            rs = stmt.executeQuery(query);
-            while (rs.next()) {
-                if (table.equals("withdrawal")) {
-                    wObservableList.add(new ListItem(rs.getString(6), rs.getString
-                            (7), rs.getDate(5).toString(), Integer.toString
-                            (rs.getInt(3))));
-                }else if (table.equals("deposit")) {
-                    dObservableList.add(new ListItem(rs.getString(6), rs.getString
-                            (7), rs.getDate(5).toString(), Integer.toString
-                            (rs.getInt(3))));
-                }
-            }
-            rs.close();
-            stmt.close();
-        }catch (Exception e) {System.out.println(e.getMessage());}
-
-        wNumTypeColumn.setCellValueFactory(new PropertyValueFactory<>("numType"));
-        wPayeeReasonColumn.setCellValueFactory(new PropertyValueFactory<>("payeeReason"));
-        wDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-        wAmtColumn.setCellValueFactory(new PropertyValueFactory<>("amt"));
-        dNumTypeColumn.setCellValueFactory(new PropertyValueFactory<>("numType"));
-        dPayerMemoColumn.setCellValueFactory(new PropertyValueFactory<>("payeeReason"));
-        dDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-        dAmtColumn.setCellValueFactory(new PropertyValueFactory<>("amt"));
-
-        wNumTypeColumn.setStyle( "-fx-alignment: CENTER;");
-        wPayeeReasonColumn.setStyle( "-fx-alignment: CENTER;");
-        wDateColumn.setStyle( "-fx-alignment: CENTER;");
-        wAmtColumn.setStyle( "-fx-alignment: CENTER;");
-        dNumTypeColumn.setStyle( "-fx-alignment: CENTER;");
-        dPayerMemoColumn.setStyle( "-fx-alignment: CENTER;");
-        dDateColumn.setStyle( "-fx-alignment: CENTER;");
-        dAmtColumn.setStyle( "-fx-alignment: CENTER;");
-
-        wTableView.setItems(wObservableList);
-        dTableView.setItems(dObservableList);
-        wTableView.getSortOrder().add(wDateColumn);
-        dTableView.getSortOrder().add(dDateColumn);
+        getAccount();
+        setObservableLists(table);
+        setFXMLItems();
     }
 
     private void setSearchColumnItemChoiceBox() {
@@ -253,6 +182,15 @@ public class DashboardController implements Initializable {
         }else if (string.contains("Checking")) {
             account = "Checking";
         }
+        wTotal = 0.00;
+        dTotal = 0.00;
+        wObservableList.clear();
+        dObservableList.clear();
+        getTransactions("withdrawal");
+        getTransactions("deposit");
+        nTotal = dTotal - wTotal;
+        nTotalLabel.setText("$" + nTotal);
+        setAccountLabel();
     }
 
     public void setSearchButton() {
@@ -294,9 +232,9 @@ public class DashboardController implements Initializable {
                 Statement stmt = db.makeConnection().createStatement();
                 ResultSet rs = stmt.executeQuery("select * from " + table + " where userID = " + userID);
                 while (rs.next()) {
-                    String checkNum = rs.getString(7);
-                    String payee = rs.getString(8);
-                    String date = rs.getDate(6).toString();
+                    String checkNum = rs.getString(6);
+                    String payee = rs.getString(7);
+                    String date = rs.getDate(5).toString();
                     String amt = Integer.toString(rs.getInt(3));
                     switch (table) {
                         case "check_withdrawal", "non_check_withdrawal" -> wObservableList.add(new ListItem
@@ -332,8 +270,8 @@ public class DashboardController implements Initializable {
                     }else {
                         rs.beforeFirst();
                         while (rs.next()) {
-                            String checkNum = rs.getString(7);
-                            String payee = rs.getString(8);
+                            String checkNum = rs.getString(6);
+                            String payee = rs.getString(7);
                             String date = rs.getDate(5).toString();
                             String amt = Integer.toString(rs.getInt(3));
                             wObservableList.add(new ListItem(checkNum, payee, date, amt));
@@ -358,8 +296,8 @@ public class DashboardController implements Initializable {
                     }else {
                         rs.beforeFirst();
                         while (rs.next()) {
-                            String checkNum = rs.getString(7);
-                            String payee = rs.getString(8);
+                            String checkNum = rs.getString(6);
+                            String payee = rs.getString(7);
                             String date = rs.getDate(5).toString();
                             String amt = Integer.toString(rs.getInt(3));
                             dObservableList.add(new ListItem(checkNum, payee, date, amt));
@@ -383,8 +321,12 @@ public class DashboardController implements Initializable {
         searchTextField.setText("");
         wObservableList.clear();
         dObservableList.clear();
+        wTotal = 0.00;
+        dTotal = 0.00;
         getTransactions("withdrawal");
         getTransactions("deposit");
+        nTotal = dTotal - wTotal;
+        nTotalLabel.setText("$" + nTotal);
     }
 
     private String setTable(String strTable) {
@@ -422,6 +364,138 @@ public class DashboardController implements Initializable {
             case "Type" -> column = "depositType";
         }
         return column;
+    }
+
+    private void getAccount() {
+        String rButtons = toggleGroup.getSelectedToggle().toString();
+        if (rButtons.contains("Checking")) {account = "checking";}
+        else if (rButtons.contains("Savings")) {account = "savings";}
+    }
+
+    private void setAccountLabel() {
+        String acct = account.substring(0,1).toUpperCase() + account.substring(1);
+        acctBalanceLabel.setText(acct + " Balace");
+    }
+
+    private void setObservableLists(String table) {
+        DBHelper db = new DBHelper();
+        ResultSet rs;
+
+        try {
+            String query = "select * from check_" + table + " where userID = " + userID + " and acct = '"
+                    + account + "'";
+            Statement stmt = db.makeConnection().createStatement();
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                if (table.equals("withdrawal")) {
+                    wObservableList.add(new ListItem(Integer.toString(rs.getInt(6)), rs.getString
+                            (7), rs.getDate(5).toString(), Integer.toString
+                            (rs.getInt(3))));
+                    try {
+                        wTotal = wTotal + Double.parseDouble(rs.getString(3));
+                    }catch (NullPointerException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }else if (table.equals("deposit")) {
+                    dObservableList.add(new ListItem(Integer.toString(rs.getInt(6)), rs.getString
+                            (7), rs.getDate(5).toString(), Integer.toString
+                            (rs.getInt(3))));
+                    try {
+                        dTotal = dTotal + Double.parseDouble(rs.getString(3));
+                    }catch (NullPointerException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+            }
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {System.out.println(e.getMessage());}
+
+        try {
+            String query = "select * from non_check_" + table + " where userID = " + userID + " and acct = '"
+                    + account + "'";
+            Statement stmt = db.makeConnection().createStatement();
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                if (table.equals("withdrawal")) {
+                    wObservableList.add(new ListItem(rs.getString(6), rs.getString
+                            (7), rs.getDate(5).toString(), Integer.toString
+                            (rs.getInt(3))));
+                    try {
+                        wTotal = wTotal + Double.parseDouble(rs.getString(3));
+                    }catch (NullPointerException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }else if (table.equals("deposit")) {
+                    dObservableList.add(new ListItem(rs.getString(6), rs.getString
+                            (7), rs.getDate(5).toString(), Integer.toString
+                            (rs.getInt(3))));
+                    try {
+                        dTotal = dTotal + Double.parseDouble(rs.getString(3));
+                    }catch (NullPointerException e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+            }
+            rs.close();
+            stmt.close();
+        }catch (Exception e) {System.out.println(e.getMessage());}
+    }
+
+    private void setFXMLItems() {
+        DBHelper db = new DBHelper();
+        wNumTypeColumn.setCellValueFactory(new PropertyValueFactory<>("numType"));
+        wPayeeReasonColumn.setCellValueFactory(new PropertyValueFactory<>("payeeReason"));
+        wDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        wAmtColumn.setCellValueFactory(new PropertyValueFactory<>("amt"));
+        dNumTypeColumn.setCellValueFactory(new PropertyValueFactory<>("numType"));
+        dPayerMemoColumn.setCellValueFactory(new PropertyValueFactory<>("payeeReason"));
+        dDateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        dAmtColumn.setCellValueFactory(new PropertyValueFactory<>("amt"));
+
+        wNumTypeColumn.setStyle( "-fx-alignment: CENTER;");
+        wPayeeReasonColumn.setStyle( "-fx-alignment: CENTER;");
+        wDateColumn.setStyle( "-fx-alignment: CENTER;");
+        wAmtColumn.setStyle( "-fx-alignment: CENTER;");
+        dNumTypeColumn.setStyle( "-fx-alignment: CENTER;");
+        dPayerMemoColumn.setStyle( "-fx-alignment: CENTER;");
+        dDateColumn.setStyle( "-fx-alignment: CENTER;");
+        dAmtColumn.setStyle( "-fx-alignment: CENTER;");
+
+        wTableView.setItems(wObservableList);
+        dTableView.setItems(dObservableList);
+        wTableView.getSortOrder().add(wDateColumn);
+        dTableView.getSortOrder().add(dDateColumn);
+
+        wTotalLabel.setText("$" + wTotal);
+        dTotalLabel.setText("$" + dTotal);
+        try {
+            Statement statement = db.makeConnection().createStatement();
+            ResultSet resultSet = statement.executeQuery("select * from " + account);
+            resultSet.last();
+            String abTotal = resultSet.getString(7);
+            abTotalLabel.setText(abTotal);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void clearObservableLists() {
+        try {
+            wObservableList.clear();
+            dObservableList.clear();
+        }catch (NullPointerException e) {System.out.println(e.getMessage());}
+    }
+
+    private void initialSetup() {
+        toggleGroup = new ToggleGroup();
+        checkingRadioButton.setToggleGroup(toggleGroup);
+        savingsRadioButton.setToggleGroup(toggleGroup);
+        checkingRadioButton.setSelected(true);
+        searchTableChoiceBox.getItems().addAll("Check Withdrawal", "Non-Check Withdrawal", "Check Deposit",
+                "Non-Check Deposit");
+        addTableItemChoiceBox.getItems().addAll("Check Withdrawal", "Non-Check Withdrawal", "Check Deposit",
+                "Non-Check Deposit");
     }
 
 }
