@@ -44,6 +44,7 @@ public class DashboardController implements Initializable {
     double dTotal = 0.00;
     double nTotal;
 
+
     public class ListItem {
         String numType, payeeReason, date, amt;
 
@@ -79,26 +80,20 @@ public class DashboardController implements Initializable {
         }
     }
 
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initialSetup();
         clearObservableLists();
         getAccount();
-        setAccountLabel();
         getTransactions("withdrawal");
         getTransactions("deposit");
-
-        nTotal = dTotal - wTotal;
-        nTotalLabel.setText("$" + nTotal);
+        setAccountLabel();
 
         //Set listener for addTableItemChoiceBox and adjusts the available selections for addColumnItemChoiceBox
         searchTableChoiceBox.getSelectionModel().selectedItemProperty().addListener((ObservableValue<?
                 extends String> observable, String oldValue, String newValue) -> setSearchColumnItemChoiceBox() );
-        //Set listener for togglegroup, adjusts observable lists according to the item selected
-        toggleGroup.selectedToggleProperty().addListener((ov, old_toggle, new_toggle) -> {
-            setToggleGroup();
-        });
+        //Set listener for toggles, adjusts observable lists according to the item selected
+        toggleGroup.selectedToggleProperty().addListener((ov, old_toggle, new_toggle) -> setToggleGroup());
     }
 
 
@@ -375,6 +370,9 @@ public class DashboardController implements Initializable {
     private void setAccountLabel() {
         String acct = account.substring(0,1).toUpperCase() + account.substring(1);
         acctBalanceLabel.setText(acct + " Balace");
+
+        nTotal = dTotal - wTotal;
+        nTotalLabel.setText("$" + nTotal);
     }
 
     private void setObservableLists(String table) {
@@ -389,8 +387,8 @@ public class DashboardController implements Initializable {
             while (rs.next()) {
                 if (table.equals("withdrawal")) {
                     wObservableList.add(new ListItem(Integer.toString(rs.getInt(6)), rs.getString
-                            (7), rs.getDate(5).toString(), Integer.toString
-                            (rs.getInt(3))));
+                            (7), rs.getDate(5).toString(), Double.toString
+                            (rs.getDouble(3))));
                     try {
                         wTotal = wTotal + Double.parseDouble(rs.getString(3));
                     }catch (NullPointerException e) {
@@ -398,8 +396,8 @@ public class DashboardController implements Initializable {
                     }
                 }else if (table.equals("deposit")) {
                     dObservableList.add(new ListItem(Integer.toString(rs.getInt(6)), rs.getString
-                            (7), rs.getDate(5).toString(), Integer.toString
-                            (rs.getInt(3))));
+                            (7), rs.getDate(5).toString(), Double.toString
+                            (rs.getDouble(3))));
                     try {
                         dTotal = dTotal + Double.parseDouble(rs.getString(3));
                     }catch (NullPointerException e) {
@@ -419,8 +417,8 @@ public class DashboardController implements Initializable {
             while (rs.next()) {
                 if (table.equals("withdrawal")) {
                     wObservableList.add(new ListItem(rs.getString(6), rs.getString
-                            (7), rs.getDate(5).toString(), Integer.toString
-                            (rs.getInt(3))));
+                            (7), rs.getDate(5).toString(), Double.toString
+                            (rs.getDouble(3))));
                     try {
                         wTotal = wTotal + Double.parseDouble(rs.getString(3));
                     }catch (NullPointerException e) {
@@ -428,8 +426,8 @@ public class DashboardController implements Initializable {
                     }
                 }else if (table.equals("deposit")) {
                     dObservableList.add(new ListItem(rs.getString(6), rs.getString
-                            (7), rs.getDate(5).toString(), Integer.toString
-                            (rs.getInt(3))));
+                            (7), rs.getDate(5).toString(), Double.toString
+                            (rs.getDouble(3))));
                     try {
                         dTotal = dTotal + Double.parseDouble(rs.getString(3));
                     }catch (NullPointerException e) {

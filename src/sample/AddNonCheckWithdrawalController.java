@@ -26,7 +26,6 @@ import java.util.ResourceBundle;
 import static sample.LoginController.userID;
 
 public class AddNonCheckWithdrawalController implements Initializable {
-
     @FXML TextField ncwType, ncwReason, ncwAmount;
     @FXML ComboBox<String> ncwAcct;
     @FXML DatePicker ncwDate;
