@@ -64,10 +64,10 @@ public class AddNonCheckWithdrawalController implements Initializable {
 
     public void setNCWAddButton(ActionEvent ev) {
         DBHelper db = new DBHelper();
-        String totalQuery = null;
+        String totalQuery;
         BigDecimal total = null;
-        String date = null;
-        String acct = null;
+        String date;
+        String acct;
         String type = ncwType.getText();
         String amount = ncwAmount.getText();
         String reason = ncwReason.getText();

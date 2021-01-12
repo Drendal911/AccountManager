@@ -56,10 +56,10 @@ public class AddCheckWithdrawalController implements Initializable {
 
     public void setAddButton(ActionEvent ev) {
         DBHelper db = new DBHelper();
-        String totalQuery = null;
+        String totalQuery;
         BigDecimal total = null;
-        String date = null;
-        String acct = null;
+        String date;
+        String acct;
         String checkNum = cwCheckNum.getText();
         String amount = cwAmt.getText();
         String payee = cwPayee.getText();

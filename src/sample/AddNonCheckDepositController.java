@@ -59,10 +59,10 @@ public class AddNonCheckDepositController implements Initializable {
 
     public void setAddButton(ActionEvent ev) {
         DBHelper db = new DBHelper();
-        String totalQuery = null;
+        String totalQuery;
         BigDecimal total = null;
-        String date = null;
-        String acct = null;
+        String date;
+        String acct;
         String type = ncdType.getText();
         String amount = ncdAmount.getText();
         String memo = ncdMemo.getText();

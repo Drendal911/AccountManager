@@ -57,10 +57,10 @@ public class AddCheckDepositController implements Initializable {
 
     public void setAddCDButton(ActionEvent ev) {
         DBHelper db = new DBHelper();
-        String totalQuery = null;
+        String totalQuery;
         BigDecimal total = null;
-        String date = null;
-        String acct = null;
+        String date;
+        String acct;
         String checkNum = cdCheckNum.getText();
         String amount = cdAmt.getText();
         String payer = cdPayer.getText();
