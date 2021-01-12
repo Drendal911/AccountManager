@@ -113,7 +113,7 @@ public class AddNonCheckDepositController implements Initializable {
                     String ncdDate = rs.getString("date");
 
                     assert total != null;
-                    BigDecimal bdTotal = (total.subtract(new BigDecimal(amount)));
+                    BigDecimal bdTotal = (total.add(new BigDecimal(amount)));
                     rs.close();
                     pStmt.close();
 

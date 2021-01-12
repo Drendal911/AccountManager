@@ -17,15 +17,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.ResourceBundle;
 
 import static sample.LoginController.userID;
@@ -324,7 +322,7 @@ public class DashboardController implements Initializable {
         DBHelper db = new DBHelper();
         DialogBox dialogBox = new DialogBox();
         int aID;
-        String query = "";
+        String query;
         Statement stmt;
         ResultSet rs;
         String strTable = deleteTableItemChoiceBox.getSelectionModel().getSelectedItem();
@@ -345,8 +343,8 @@ public class DashboardController implements Initializable {
                             rs = stmt.executeQuery(query);
                             if (rs.next()) {
                                 aID = rs.getInt("cwID");
-                                query = "delete from check_withdrawal where checkNum = '" + numType + "' and payee = '" +
-                                        payeeReason + "' and amt = " + amount + " and date = '" + date +
+                                query = "delete from check_withdrawal where checkNum = '" + numType + "' and payee = '"
+                                        + payeeReason + "' and amt = " + amount + " and date = '" + date +
                                         "' and userID = " + userID;
                                 db.makeConnection().createStatement().executeUpdate(query);
                                 rs.close();
@@ -363,8 +361,8 @@ public class DashboardController implements Initializable {
 
                                 query = "insert into " + account + " (userID, amt, transactionType, transactionID, " +
                                         "date, total) values (" + userID + ", " + amount + ", 'Removed CW on: " +
-                                        dateNow + " - " + payeeReason + " - " + amount + ", " + date + "', " + aID + ", '" + date +
-                                        "', " + newTotal + ")";
+                                        dateNow + " - " + payeeReason + " - " + amount + ", " + date + "', " + aID +
+                                        ", '" + date + "', " + newTotal + ")";
                                 db.makeConnection().createStatement().executeUpdate(query);
                                 stmt.close();
 
@@ -379,16 +377,16 @@ public class DashboardController implements Initializable {
                             }else {
                                 try {
                                     query = "select * from non_check_withdrawal where withdrawalType = '" + numType +
-                                            "' and withdrawalReason = '" + payeeReason + "' and amt = " + amount + " and date = '" +
-                                            date + "' and userID = " + userID;
+                                            "' and withdrawalReason = '" + payeeReason + "' and amt = " + amount +
+                                            " and date = '" + date + "' and userID = " + userID;
                                     stmt = db.makeConnection().createStatement();
                                     rs = stmt.executeQuery(query);
                                     if (rs.next()) {
                                         aID = rs.getInt("ncwID");
 
                                         query = "delete from non_check_withdrawal where withdrawalType = '" + numType +
-                                                "' and withdrawalReason = '" + payeeReason + "' and amt = " + amount + " and date = '" +
-                                                date + "' and userID = " + userID;
+                                                "' and withdrawalReason = '" + payeeReason + "' and amt = " + amount +
+                                                " and date = '" + date + "' and userID = " + userID;
                                         db.makeConnection().createStatement().executeUpdate(query);
                                         rs.close();
                                         stmt.close();
@@ -402,36 +400,133 @@ public class DashboardController implements Initializable {
                                         rs.close();
                                         double newTotal = Double.sum(oldTotal, Double.parseDouble(amount));
 
-                                        query = "insert into " + account + " (userID, amt, transactionType, transactionID, " +
-                                                "date, total) values (" + userID + ", " + amount + ", 'Removed NCW on " +
-                                                dateNow + ": " + payeeReason + " - " + amount + ", " + date +  "', " + aID + ", '" + date +
-                                                "', " + newTotal + ")";
+                                        query = "insert into " + account + " (userID, amt, transactionType, " +
+                                                "transactionID, date, total) values (" + userID + ", " + amount +
+                                                ", 'Removed NCW on " + dateNow + ": " + payeeReason + " - " + amount +
+                                                ", " + date +  "', " + aID + ", '" + date + "', " + newTotal + ")";
                                         db.makeConnection().createStatement().executeUpdate(query);
                                         stmt.close();
 
-                                        query = "delete from " + account + " where transactionType = 'non_check_withdrawal' and " +
-                                                "transactionID = " + aID + " and userID = " + userID;
+                                        query = "delete from " + account + " where transactionType = " +
+                                                "'non_check_withdrawal' and transactionID = " + aID + " and userID = " +
+                                                userID;
                                         db.makeConnection().createStatement().executeUpdate(query);
                                         stmt.close();
 
-                                        dialogBox.infoAlertDialog("Transaction Deleted", "The selected transaction has been successfully removed from the database.");
+                                        dialogBox.infoAlertDialog("Transaction Deleted", "The " +
+                                                "selected transaction has been successfully removed from the database");
                                         setDefaultButton();
                                     }
                                 }catch (Exception ex) {
                                     ex.printStackTrace();
                                     System.out.println(ex.getMessage());
-                                    System.out.println(ex.getCause());
-                                    System.out.println(ex.getClass());
                                 }
                             }
                         }catch (Exception e) {
                             System.out.println(e.getMessage());
-
                         }
                     }
                 }
                 case "Deposit" -> {
+                    if(dTableView.getSelectionModel().getSelectedItem() != null) {
+                        String numType = dTableView.getSelectionModel().getSelectedItem().getNumType();
+                        String payeeReason = dTableView.getSelectionModel().getSelectedItem().getPayeeReason();
+                        String date = dTableView.getSelectionModel().getSelectedItem().getDate();
+                        String amount = dTableView.getSelectionModel().getSelectedItem().getAmt();
 
+                        try {
+                            query = "select * from check_deposit where checkNum = '" + numType + "' and payer = '" +
+                                    payeeReason + "' and amt = " + amount + " and date = '" + date + "' and userID = "
+                                    + userID;
+                            stmt = db.makeConnection().createStatement();
+                            rs = stmt.executeQuery(query);
+                            if (rs.next()) {
+                                aID = rs.getInt("cdID");
+                                query = "delete from check_deposit where checkNum = '" + numType + "' and payer = '" +
+                                        payeeReason + "' and amt = " + amount + " and date = '" + date +
+                                        "' and userID = " + userID;
+                                db.makeConnection().createStatement().executeUpdate(query);
+                                rs.close();
+                                stmt.close();
+
+                                query = "select * from " + account + " where userID = " + userID;
+                                stmt = db.makeConnection().createStatement();
+                                rs = stmt.executeQuery(query);
+                                rs.last();
+
+                                BigDecimal oldTotal = rs.getBigDecimal("total");
+                                stmt.close();
+                                rs.close();
+                                BigDecimal newTotal = oldTotal.subtract(new BigDecimal(amount));
+
+                                query = "insert into " + account + " (userID, amt, transactionType, transactionID, " +
+                                        "date, total) values (" + userID + ", " + amount + ", 'Removed CD on: " +
+                                        dateNow + " - " + payeeReason + " - " + amount + ", " + date + "', " + aID +
+                                        ", '" + date + "', " + newTotal + ")";
+                                db.makeConnection().createStatement().executeUpdate(query);
+                                stmt.close();
+
+                                query = "delete from " + account + " where transactionType = 'check_deposit' and " +
+                                        "transactionID = " + aID + " and userID = " + userID;
+                                db.makeConnection().createStatement().executeUpdate(query);
+                                stmt.close();
+
+                                dialogBox.infoAlertDialog("Transaction Deleted", "The selected " +
+                                        "transaction has been successfully removed from the database.");
+                                setDefaultButton();
+                            }else {
+                                try {
+                                    query = "select * from non_check_deposit where depositType = '" + numType +
+                                            "' and depositMemo = '" + payeeReason + "' and amt = " + amount +
+                                            " and date = '" + date + "' and userID = " + userID;
+                                    stmt = db.makeConnection().createStatement();
+                                    rs = stmt.executeQuery(query);
+                                    if (rs.next()) {
+                                        aID = rs.getInt("ncdID");
+
+                                        query = "delete from non_check_deposit where depositType = '" + numType +
+                                                "' and depositMemo = '" + payeeReason + "' and amt = " + amount +
+                                                " and date = '" + date + "' and userID = " + userID;
+                                        db.makeConnection().createStatement().executeUpdate(query);
+                                        rs.close();
+                                        stmt.close();
+
+                                        query = "select * from " + account + " where userID = " + userID;
+                                        stmt = db.makeConnection().createStatement();
+                                        rs = stmt.executeQuery(query);
+                                        rs.last();
+
+                                        BigDecimal oldTotal = rs.getBigDecimal("total");
+                                        stmt.close();
+                                        rs.close();
+                                        BigDecimal newTotal = oldTotal.subtract(new BigDecimal(amount));
+
+                                        query = "insert into " + account + " (userID, amt, transactionType, " +
+                                                "transactionID, date, total) values (" + userID + ", " + amount +
+                                                ", 'Removed NCD on " + dateNow + ": " + payeeReason + " - " + amount +
+                                                ", " + date +  "', " + aID + ", '" + date + "', " + newTotal + ")";
+                                        db.makeConnection().createStatement().executeUpdate(query);
+                                        stmt.close();
+
+                                        query = "delete from " + account + " where transactionType = " +
+                                                "'non_check_deposit' and transactionID = " + aID + " and userID = " +
+                                                userID;
+                                        db.makeConnection().createStatement().executeUpdate(query);
+                                        stmt.close();
+
+                                        dialogBox.infoAlertDialog("Transaction Deleted", "The " +
+                                                "selected transaction has been successfully removed from the database");
+                                        setDefaultButton();
+                                    }
+                                }catch (Exception ex) {
+                                    ex.printStackTrace();
+                                    System.out.println(ex.getMessage());
+                                }
+                            }
+                        }catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }
                 }
             }
         }catch (NullPointerException ex) {
@@ -633,6 +728,5 @@ public class DashboardController implements Initializable {
                 "Non-Check Deposit");
         deleteTableItemChoiceBox.getItems().addAll("Withdrawal", "Deposit");
     }
-
 
 }
