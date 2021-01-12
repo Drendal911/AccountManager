@@ -12,18 +12,24 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.RegisterController">
    <children>
-      <VBox layoutX="151.0" layoutY="180.0" prefHeight="39.0" prefWidth="300.0">
+      <VBox layoutX="150.0" layoutY="179.0" prefHeight="129.0" prefWidth="300.0">
          <children>
             <TextField fx:id="registerUsernameTextField" alignment="CENTER" promptText="Enter a username">
                <VBox.margin>
-                  <Insets bottom="25.0" top="10.0" />
+                  <Insets bottom="10.0" />
                </VBox.margin>
             </TextField>
             <TextField fx:id="registerPasswordTextField" alignment="CENTER" promptText="Enter a password">
                <VBox.margin>
-                  <Insets bottom="10.0" top="25.0" />
+                  <Insets bottom="10.0" />
                </VBox.margin>
             </TextField>
+            <TextField fx:id="caBalanceTextField" alignment="CENTER" layoutX="10.0" layoutY="45.0" promptText="Starting Checking Account Balance">
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </TextField>
+            <TextField fx:id="saBalanceTextField" alignment="CENTER" layoutX="10.0" layoutY="80.0" promptText="Starting Savings Account Balance" />
          </children>
       </VBox>
       <HBox layoutX="443.0" layoutY="359.0" prefHeight="27.0" prefWidth="151.0">

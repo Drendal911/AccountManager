@@ -44,9 +44,9 @@ public class DashboardController implements Initializable {
     private ObservableList<String> columnChoiceBoxList = FXCollections.observableArrayList();
     private ToggleGroup toggleGroup;
     public static String account;
-    double wTotal = 0.00;
-    double dTotal = 0.00;
-    double nTotal;
+    private double wTotal = 0.00;
+    private double dTotal = 0.00;
+    private double nTotal;
 
 
     public class ListItem {
@@ -632,9 +632,7 @@ public class DashboardController implements Initializable {
                             (rs.getDouble(3))));
                     try {
                         dTotal = dTotal + Double.parseDouble(rs.getString(3));
-                    }catch (NullPointerException e) {
-                        System.out.println(e.getMessage());
-                    }
+                    }catch (NullPointerException e) {System.out.println(e.getMessage());}
                 }
             }
             rs.close();
