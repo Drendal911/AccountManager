@@ -204,5 +204,24 @@
             </Button>
          </children>
       </HBox>
+      <HBox layoutX="320.0" layoutY="39.0" prefHeight="27.0" prefWidth="326.0">
+         <children>
+            <Label text="Table">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <ChoiceBox fx:id="deleteTableItemChoiceBox" prefWidth="150.0">
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin>
+            </ChoiceBox>
+            <Button fx:id="deleteTransactionButton" mnemonicParsing="false" onAction="#setDeleteTransactionButton" text="Delete Transaction">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

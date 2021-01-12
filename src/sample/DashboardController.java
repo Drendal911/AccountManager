@@ -20,7 +20,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.ResourceBundle;
 
 import static sample.LoginController.userID;
@@ -31,8 +35,9 @@ public class DashboardController implements Initializable {
     @FXML TableColumn<ListItem, String> wNumTypeColumn, wPayeeReasonColumn, wDateColumn, dNumTypeColumn,
             dPayerMemoColumn, dDateColumn;
     @FXML TableColumn<ListItem, Integer > wAmtColumn, dAmtColumn;
-    @FXML ChoiceBox<String> searchColumnChoiceBox, searchTableChoiceBox, addTableItemChoiceBox;
-    @FXML Button searchButton, addTransactionButton, defaultButton;
+    @FXML ChoiceBox<String> searchColumnChoiceBox, searchTableChoiceBox, addTableItemChoiceBox,
+            deleteTableItemChoiceBox;
+    @FXML Button searchButton, addTransactionButton, defaultButton, deleteTransactionButton;
     @FXML RadioButton checkingRadioButton, savingsRadioButton;
     @FXML TextField searchTextField;
     private ObservableList<ListItem> wObservableList = FXCollections.observableArrayList();
@@ -101,26 +106,6 @@ public class DashboardController implements Initializable {
     ********************************************************************************************************************
     *******************************************************************************************************************/
 
-
-    private void getTransactions(String table) {
-        getAccount();
-        setObservableLists(table);
-        setFXMLItems();
-    }
-
-    private void setSearchColumnItemChoiceBox() {
-        if (columnChoiceBoxList != null) {
-            columnChoiceBoxList.clear();
-        }
-        String string = searchTableChoiceBox.getSelectionModel().getSelectedItem();
-        switch (string) {
-            case "Check Withdrawal" -> columnChoiceBoxList.addAll("Check Number", "Payee", "Date", "Amount");
-            case "Non-Check Withdrawal" -> columnChoiceBoxList.addAll("Type", "Reason", "Date", "Amount");
-            case "Check Deposit" -> columnChoiceBoxList.addAll("Check Number", "Payer", "Date", "Amount");
-            case "Non-Check Deposit" -> columnChoiceBoxList.addAll("Type", "Memo", "Date", "Amount");
-        }
-        searchColumnChoiceBox.setItems(columnChoiceBoxList);
-    }
 
     public void setAddTransactionButton(ActionEvent ev) {
         try {
@@ -313,6 +298,7 @@ public class DashboardController implements Initializable {
         searchColumnChoiceBox.setValue("");
         searchTableChoiceBox.setValue("");
         addTableItemChoiceBox.setValue("");
+        deleteTableItemChoiceBox.setValue("");
         searchTextField.setText("");
         wObservableList.clear();
         dObservableList.clear();
@@ -322,6 +308,128 @@ public class DashboardController implements Initializable {
         getTransactions("deposit");
         nTotal = dTotal - wTotal;
         nTotalLabel.setText("$" + nTotal);
+    }
+
+    public void setDeleteTransactionButton() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime now = LocalDateTime.now();
+        String dateNow = dtf.format(now);
+
+        DBHelper db = new DBHelper();
+        DialogBox dialogBox = new DialogBox();
+        int aID;
+        String query = "";
+        Statement stmt;
+        ResultSet rs;
+        String strTable = deleteTableItemChoiceBox.getSelectionModel().getSelectedItem();
+        try {
+            switch (strTable) {
+                case "Withdrawal" -> {
+                    if(wTableView.getSelectionModel().getSelectedItem() != null) {
+                        String numType = wTableView.getSelectionModel().getSelectedItem().getNumType();
+                        String payeeReason = wTableView.getSelectionModel().getSelectedItem().getPayeeReason();
+                        String date = wTableView.getSelectionModel().getSelectedItem().getDate();
+                        String amount = wTableView.getSelectionModel().getSelectedItem().getAmt();
+
+                        try {
+// /*
+                            query = "select * from check_withdrawal where checkNum = " + numType + " and payee = '" +
+                                    payeeReason + "' and amt = " + amount + " and date = '" + date + "' and userID = "
+                                    + userID;
+                            stmt = db.makeConnection().createStatement();
+                            rs = stmt.executeQuery(query);
+                            if (rs.next()) {
+                                aID = rs.getInt("cwID");
+                                query = "delete from check_withdrawal where checkNum = " + numType + " and payee = '" +
+                                        payeeReason + "' and amt = " + amount + " and date = '" + date +
+                                        "' and userID = " + userID;
+                                db.makeConnection().createStatement().executeUpdate(query);
+                                rs.close();
+                                stmt.close();
+
+                                query = "delete from " + account + " where transactionType = 'check_withdrawal' and " +
+                                        "transactionID = " + aID + " and userID = " + userID;
+                                db.makeConnection().createStatement().executeUpdate(query);
+                                stmt.close();
+
+                                query = "select * from " + account + " where userID = " + userID;
+                                stmt = db.makeConnection().createStatement();
+                                rs = stmt.executeQuery(query);
+                                rs.last();
+                                double oldTotal = rs.getDouble("total");
+                                stmt.close();
+                                rs.close();
+                                double newTotal = Double.sum(oldTotal, Double.parseDouble(amount));
+
+                                query = "insert into  " + account + " (userID, amt, transactionType, transactionID, " +
+                                        "date, total) values (" + userID + ", " + amount + ", 'Removed CW: " +
+                                        payeeReason + ", " + amount + ", " + date + "', " + aID + ", '" + dateNow +
+                                        "', " + newTotal + ")";
+                                        db.makeConnection().createStatement().executeUpdate(query);
+                                stmt.close();
+
+                                dialogBox.infoAlertDialog("Transaction Deleted", "The selected transaction has been successfully removed from the database.");
+                                setDefaultButton();
+                            }
+                        }catch (Exception e) {
+                            System.out.println(e.getMessage());
+                            System.out.println(e.getClass());
+                            System.out.println(e.getCause());
+/*
+                            try {
+                                System.out.println("Part 2A");
+                                query = "select * from non_check_withdrawal where checkNum = " + numType + " and payee = '" + payeeReason + "' and amt = " + amount + " and date = " + date;
+                                stmt = db.makeConnection().createStatement();
+                                rs = stmt.executeQuery(query);
+                                rs.first();
+                                while (rs.next()) {
+                                    System.out.println("Part 2B");
+
+                                    query = "delete from non_check_withdrawal where checkNum = " + numType + " and payee = '" + payeeReason + "' and amt = " + amount + " and date = " + date;
+                                    dialogBox.infoAlertDialog("Transaction Deleted", "The selected transaction has been successfully removed from the database.");
+                                    db.makeConnection().createStatement().executeUpdate(query);
+                                    rs.close();
+                                    stmt.close();
+                                }
+                            }catch (Exception ex) {
+                                ex.printStackTrace();
+                                System.out.println(ex.getMessage());
+                            }
+*/
+                        }
+                    }
+                }
+                case "Deposit" -> {
+
+                }
+            }
+        }catch (NullPointerException ex) {
+            dialogBox.infoAlertDialog("Missing Information", "Please select the table you would " +
+                    "like to delete from. Click the specific item to be deleted in the table. Then click the " +
+                    "'Delete Transaction' button again.");
+        }
+    }
+
+
+
+    private void getTransactions(String table) {
+        getAccount();
+        setObservableLists(table);
+        setFXMLItems();
+    }
+
+    private void setSearchColumnItemChoiceBox() {
+        if (columnChoiceBoxList != null) {
+            columnChoiceBoxList.clear();
+        }
+        String string = searchTableChoiceBox.getSelectionModel().getSelectedItem();
+        switch (string) {
+            case "Check Withdrawal" -> columnChoiceBoxList.addAll("Check Number", "Payee", "Date", "Amount");
+            case "Non-Check Withdrawal" -> columnChoiceBoxList.addAll("Type", "Reason", "Date", "Amount");
+            case "Check Deposit" -> columnChoiceBoxList.addAll("Check Number", "Payer", "Date", "Amount");
+            case "Non-Check Deposit" -> columnChoiceBoxList.addAll("Type", "Memo", "Date", "Amount");
+        }
+        searchColumnChoiceBox.setItems(columnChoiceBoxList);
     }
 
     private String setTable(String strTable) {
@@ -494,6 +602,8 @@ public class DashboardController implements Initializable {
                 "Non-Check Deposit");
         addTableItemChoiceBox.getItems().addAll("Check Withdrawal", "Non-Check Withdrawal", "Check Deposit",
                 "Non-Check Deposit");
+        deleteTableItemChoiceBox.getItems().addAll("Withdrawal", "Deposit");
     }
+
 
 }
