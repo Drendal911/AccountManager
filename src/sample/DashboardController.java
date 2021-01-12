@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.ResourceBundle;
 
@@ -361,9 +362,9 @@ public class DashboardController implements Initializable {
                                 double newTotal = Double.sum(oldTotal, Double.parseDouble(amount));
 
                                 query = "insert into " + account + " (userID, amt, transactionType, transactionID, " +
-                                        "date, total) values (" + userID + ", " + amount + ", 'Removed CW on " +
-                                        dateNow + ": " + payeeReason + ", " + amount + ", '" + date + "', " +
-                                        newTotal + ")";
+                                        "date, total) values (" + userID + ", " + amount + ", 'Removed CW on: " +
+                                        dateNow + " - " + payeeReason + " - " + amount + ", " + date + "', " + aID + ", '" + date +
+                                        "', " + newTotal + ")";
                                 db.makeConnection().createStatement().executeUpdate(query);
                                 stmt.close();
 
@@ -375,57 +376,57 @@ public class DashboardController implements Initializable {
                                 dialogBox.infoAlertDialog("Transaction Deleted", "The selected " +
                                         "transaction has been successfully removed from the database.");
                                 setDefaultButton();
+                            }else {
+                                try {
+                                    query = "select * from non_check_withdrawal where withdrawalType = '" + numType +
+                                            "' and withdrawalReason = '" + payeeReason + "' and amt = " + amount + " and date = '" +
+                                            date + "' and userID = " + userID;
+                                    stmt = db.makeConnection().createStatement();
+                                    rs = stmt.executeQuery(query);
+                                    if (rs.next()) {
+                                        aID = rs.getInt("ncwID");
+
+                                        query = "delete from non_check_withdrawal where withdrawalType = '" + numType +
+                                                "' and withdrawalReason = '" + payeeReason + "' and amt = " + amount + " and date = '" +
+                                                date + "' and userID = " + userID;
+                                        db.makeConnection().createStatement().executeUpdate(query);
+                                        rs.close();
+                                        stmt.close();
+
+                                        query = "select * from " + account + " where userID = " + userID;
+                                        stmt = db.makeConnection().createStatement();
+                                        rs = stmt.executeQuery(query);
+                                        rs.last();
+                                        double oldTotal = rs.getDouble("total");
+                                        stmt.close();
+                                        rs.close();
+                                        double newTotal = Double.sum(oldTotal, Double.parseDouble(amount));
+
+                                        query = "insert into " + account + " (userID, amt, transactionType, transactionID, " +
+                                                "date, total) values (" + userID + ", " + amount + ", 'Removed NCW on " +
+                                                dateNow + ": " + payeeReason + " - " + amount + ", " + date +  "', " + aID + ", '" + date +
+                                                "', " + newTotal + ")";
+                                        db.makeConnection().createStatement().executeUpdate(query);
+                                        stmt.close();
+
+                                        query = "delete from " + account + " where transactionType = 'non_check_withdrawal' and " +
+                                                "transactionID = " + aID + " and userID = " + userID;
+                                        db.makeConnection().createStatement().executeUpdate(query);
+                                        stmt.close();
+
+                                        dialogBox.infoAlertDialog("Transaction Deleted", "The selected transaction has been successfully removed from the database.");
+                                        setDefaultButton();
+                                    }
+                                }catch (Exception ex) {
+                                    ex.printStackTrace();
+                                    System.out.println(ex.getMessage());
+                                    System.out.println(ex.getCause());
+                                    System.out.println(ex.getClass());
+                                }
                             }
                         }catch (Exception e) {
                             System.out.println(e.getMessage());
-                            System.out.println(e.getCause());
-                            System.out.println(e.getClass());
-                            try {
-                                query = "select * from non_check_withdrawal where withdrawalType = '" + numType +
-                                        "' and withdrawalReason = '" + payeeReason + "' and amt = " + amount + " and date = '" +
-                                        date + "' and userID = " + userID;
-                                stmt = db.makeConnection().createStatement();
-                                rs = stmt.executeQuery(query);
-                                if (rs.next()) {
-                                    aID = rs.getInt("ncwID");
 
-                                    query = "delete from non_check_withdrawal where withdrawalType = '" + numType +
-                                            "' and withdrawalReason = '" + payeeReason + "' and amt = " + amount + " and date = '" +
-                                            date + "' and userID = " + userID;
-                                    db.makeConnection().createStatement().executeUpdate(query);
-                                    rs.close();
-                                    stmt.close();
-
-                                    query = "select * from " + account + " where userID = " + userID;
-                                    stmt = db.makeConnection().createStatement();
-                                    rs = stmt.executeQuery(query);
-                                    rs.last();
-                                    double oldTotal = rs.getDouble("total");
-                                    stmt.close();
-                                    rs.close();
-                                    double newTotal = Double.sum(oldTotal, Double.parseDouble(amount));
-
-                                    query = "insert into " + account + " (userID, amt, transactionType, transactionID, " +
-                                            "date, total) values (" + userID + ", " + amount + ", 'Removed NCW on " +
-                                            dateNow + ": " + payeeReason + ", " + amount + "', " + aID + ", '" + date +
-                                            "', " + newTotal + ")";
-                                    db.makeConnection().createStatement().executeUpdate(query);
-                                    stmt.close();
-
-                                    query = "delete from " + account + " where transactionType = 'non_check_withdrawal' and " +
-                                            "transactionID = " + aID + " and userID = " + userID;
-                                    db.makeConnection().createStatement().executeUpdate(query);
-                                    stmt.close();
-
-                                    dialogBox.infoAlertDialog("Transaction Deleted", "The selected transaction has been successfully removed from the database.");
-                                    setDefaultButton();
-                                }
-                            }catch (Exception ex) {
-                                ex.printStackTrace();
-                                System.out.println(ex.getMessage());
-                                System.out.println(ex.getCause());
-                                System.out.println(ex.getClass());
-                            }
                         }
                     }
                 }
