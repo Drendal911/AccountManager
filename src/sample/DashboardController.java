@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -168,7 +169,7 @@ public class DashboardController implements Initializable {
         getTransactions("withdrawal");
         getTransactions("deposit");
         nTotal = dTotal - wTotal;
-        nTotalLabel.setText("$" + nTotal);
+
         setAccountLabel();
     }
 
@@ -604,7 +605,8 @@ public class DashboardController implements Initializable {
         acctBalanceLabel.setText(acct + " Balace");
 
         nTotal = dTotal - wTotal;
-        nTotalLabel.setText("$" + nTotal);
+        String nTotalDisplay = String.format("%.2f", nTotal);
+        nTotalLabel.setText("$" + nTotalDisplay);
     }
 
     private void setObservableLists(String table) {
