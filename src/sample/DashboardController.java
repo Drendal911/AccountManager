@@ -602,7 +602,7 @@ public class DashboardController implements Initializable {
 
     private void setAccountLabel() {
         String acct = account.substring(0,1).toUpperCase() + account.substring(1);
-        acctBalanceLabel.setText(acct + " Balace");
+        acctBalanceLabel.setText(acct + " Balance");
 
         nTotal = dTotal - wTotal;
         String nTotalDisplay = String.format("%.2f", nTotal);
@@ -697,8 +697,10 @@ public class DashboardController implements Initializable {
         wTableView.getSortOrder().add(wDateColumn);
         dTableView.getSortOrder().add(dDateColumn);
 
-        wTotalLabel.setText("$" + wTotal);
-        dTotalLabel.setText("$" + dTotal);
+        String wTotalPrecision = String.format("%.2f", wTotal);
+        String dTotalPrecision = String.format("%.2f", dTotal);
+        wTotalLabel.setText("$" + wTotalPrecision);
+        dTotalLabel.setText("$" + dTotalPrecision);
         try {
             Statement statement = db.makeConnection().createStatement();
             ResultSet resultSet = statement.executeQuery("select * from " + account);

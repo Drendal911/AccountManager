@@ -8,7 +8,6 @@ public class DBHelper {
             "?autoReconnect=true&useSSL=false";
     private static final String username = "acctmgr";
     private static final String password = "acctmgr_password";
-    //private static final String driver = "com.mysql.jdbc.Driver";
     Connection dbConnect;
 
     public DBHelper() {
